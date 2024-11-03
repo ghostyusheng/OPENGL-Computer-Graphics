@@ -18,6 +18,9 @@ struct vec2 {
 };
 
 struct vec3 {
+	vec3 vec3::operator- () const {
+		return vec3(-v[0], -v[1], -v[2]);
+	}
 	vec3 ();
 	//! create from 3 scalars
 	vec3 (float x, float y, float z);
@@ -49,6 +52,10 @@ struct vec3 {
 	//! internal data
 	float v[3];
 };
+
+
+
+
 
 struct vec4 {
 	vec4 ();
@@ -137,4 +144,6 @@ versor slerp (const versor& q, const versor& r);
 versor normalise (versor& q);
 void print (const versor& q);
 versor slerp (versor& q, versor& r, float t);
+
+
 #endif

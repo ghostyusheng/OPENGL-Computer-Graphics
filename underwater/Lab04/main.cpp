@@ -19,7 +19,8 @@
 // Project includes
 #include "maths_funcs.h"
 
-
+vec3 cameraPosition(0.0f, 0.0f, 10.0f);
+float cameraRotationY = 0.0f; // For rotation around the Y-axis
 
 /*----------------------------------------------------------------------------
 MESH TO LOAD
@@ -289,15 +290,16 @@ void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgramID);
 
-	int matrix_location = glGetUniformLocation(shaderProgramID, "model");
 	int view_mat_location = glGetUniformLocation(shaderProgramID, "view");
 	int proj_mat_location = glGetUniformLocation(shaderProgramID, "proj");
 
-	mat4 view = identity_mat4();
 	mat4 persp_proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
-	view = translate(view, vec3(0.0, 0.0, -10.0f)); // Adjust view if needed
-
 	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
+
+	mat4 view = identity_mat4();
+	view = translate(view, -cameraPosition); // Move the camera to `cameraPosition`
+	view = rotate_y_deg(view, cameraRotationY); // Rotate the camera
+
 	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
 
 	for (const auto& model : models) {
@@ -305,12 +307,14 @@ void display() {
 		modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
 		modelMatrix = translate(modelMatrix, model.position);
 
+		int matrix_location = glGetUniformLocation(shaderProgramID, "model");
 		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
 		glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
 	}
 
 	glutSwapBuffers();
 }
+
 
 
 void updateScene() {
@@ -346,10 +350,38 @@ void init() {
 
 // Placeholder code for the keypress
 void keypress(unsigned char key, int x, int y) {
-	if (key == 'x') {
-		//Translate the base, etc.
+	float movementSpeed = 0.5f;
+	float rotationSpeed = 5.0f;
+
+	switch (key) {
+	case 'w': // Move forward
+		cameraPosition.v[2] -= movementSpeed;
+		break;
+	case 's': // Move backward
+		cameraPosition.v[2] += movementSpeed;
+		break;
+	case 'a': // Move left
+		cameraPosition.v[0] -= movementSpeed;
+		break;
+	case 'd': // Move right
+		cameraPosition.v[0] += movementSpeed;
+		break;
+	case 'q': // Rotate left
+		cameraRotationY -= rotationSpeed;
+		break;
+	case 'e': // Rotate right
+		cameraRotationY += rotationSpeed;
+		break;
+	case 'r': // Move up
+		cameraPosition.v[1] += movementSpeed;
+		break;
+	case 'f': // Move down
+		cameraPosition.v[1] -= movementSpeed;
+		break;
 	}
+	glutPostRedisplay(); // Update the display after changing camera position
 }
+
 
 int main(int argc, char** argv) {
 
