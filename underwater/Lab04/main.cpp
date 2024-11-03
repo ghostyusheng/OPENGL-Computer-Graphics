@@ -38,6 +38,14 @@ typedef struct
 	std::vector<vec3> mNormals;
 	std::vector<vec2> mTextureCoords;
 } ModelData;
+
+struct Model {
+	ModelData data;
+	vec3 position; // Position of the model
+	float rotationY; // Rotation around Y-axis
+};
+
+std::vector<Model> models; // Vector to hold multiple models
 #pragma endregion SimpleTypes
 
 using namespace std;
@@ -107,6 +115,14 @@ ModelData load_mesh(const char* file_name) {
 
 	aiReleaseImport(scene);
 	return modelData;
+}
+
+Model load_model(const char* file_name, vec3 position, float rotationY) {
+	Model model;
+	model.data = load_mesh(file_name);
+	model.position = position;
+	model.rotationY = rotationY;
+	return model;
 }
 
 #pragma endregion MESH LOADING
@@ -267,46 +283,31 @@ void generateObjectBufferMesh() {
 
 
 void display() {
-
-	// tell GL to only draw onto a pixel if the shape is closer to the viewer
-	glEnable(GL_DEPTH_TEST); // enable depth-testing
-	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgramID);
 
-
-	//Declare your uniform variables that will be used in your shader
 	int matrix_location = glGetUniformLocation(shaderProgramID, "model");
 	int view_mat_location = glGetUniformLocation(shaderProgramID, "view");
 	int proj_mat_location = glGetUniformLocation(shaderProgramID, "proj");
 
-
-	// Root of the Hierarchy
 	mat4 view = identity_mat4();
 	mat4 persp_proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
-	mat4 model = identity_mat4();
-	model = rotate_z_deg(model, rotate_y);
-	view = translate(view, vec3(0.0, 0.0, -10.0f));
+	view = translate(view, vec3(0.0, 0.0, -10.0f)); // Adjust view if needed
 
-	// update uniforms & draw
 	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
-	glDrawArrays(GL_TRIANGLES, 0, mesh_data.mPointCount);
 
-	// Set up the child matrix
-	mat4 modelChild = identity_mat4();
-	modelChild = rotate_z_deg(modelChild, 180);
-	modelChild = rotate_y_deg(modelChild, rotate_y);
-	modelChild = translate(modelChild, vec3(0.0f, 1.9f, 0.0f));
+	for (const auto& model : models) {
+		mat4 modelMatrix = identity_mat4();
+		modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
+		modelMatrix = translate(modelMatrix, model.position);
 
-	// Apply the root matrix to the child matrix
-	modelChild = model * modelChild;
-
-	// Update the appropriate uniform and draw the mesh again
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelChild.m);
-	glDrawArrays(GL_TRIANGLES, 0, mesh_data.mPointCount);
+		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
+		glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
+	}
 
 	glutSwapBuffers();
 }
@@ -330,13 +331,17 @@ void updateScene() {
 }
 
 
-void init()
-{
-	// Set up the shaders
-	GLuint shaderProgramID = CompileShaders();
-	// load mesh into a vertex buffer array
-	generateObjectBufferMesh();
+void init() {
+	// Load multiple models with preset positions
+	models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), 0.0f));
+	models.push_back(load_model("monkey.dae", vec3(2.0f, 0.0f, -10.0f), 45.0f)); // Example for another model
+	models.push_back(load_model("monkey.dae", vec3(3.0f, 0.0f, -10.0f), 45.0f));
+	models.push_back(load_model("monkey.dae", vec3(3.0f, 3.0f, -10.0f), 45.0f));
+	models.push_back(load_model("monkey.dae", vec3(0.0f, -3.0f, -10.0f), 45.0f));
+	// Add more models as needed...
 
+	GLuint shaderProgramID = CompileShaders();
+	generateObjectBufferMesh();
 }
 
 // Placeholder code for the keypress
