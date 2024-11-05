@@ -56,7 +56,20 @@ struct Model {
     GLuint vao; // VAO for this specific model
 };
 
+struct ModelPart {
+    ModelData data;
+    GLuint vao;
+};
+
+struct FishModel {
+    ModelPart body;
+    ModelPart fin;
+    vec3 position;
+    float rotationY;
+};
+
 std::vector<Model> models; // Vector to hold multiple models
+std::vector<FishModel> fishModels; // Vector to hold multiple models
 #pragma endregion SimpleTypes
 
 using namespace std;
@@ -129,6 +142,114 @@ Model load_model(const char* file_name, vec3 position, float rotationY) {
     glBindVertexArray(0); // Unbind VAO when done setting it up
 
     return model;
+}
+
+FishModel load_fish_model(const char* file_name, vec3 position, float rotationY) {
+    FishModel fishModel;
+    fishModel.position = position;
+    fishModel.rotationY = rotationY;
+
+    const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
+    if (!scene) {
+        fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
+        return fishModel;
+    }
+
+    // Iterate through each mesh in the scene
+    for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
+        const aiMesh* mesh = scene->mMeshes[m_i];
+
+        ModelData modelData;
+        modelData.mPointCount = mesh->mNumVertices;
+
+        // Populate vertex and normal data
+        for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
+            if (mesh->HasPositions()) {
+                const aiVector3D* vp = &(mesh->mVertices[v_i]);
+                modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
+            }
+            if (mesh->HasNormals()) {
+                const aiVector3D* vn = &(mesh->mNormals[v_i]);
+                modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
+            }
+        }
+
+        // Debug output for mesh information
+        std::cout << "Mesh Index: " << m_i << ", Vertex Count: " << mesh->mNumVertices << std::endl;
+
+        ModelPart* part = nullptr;
+
+        // Assign part based on mesh index
+        if (m_i == 0) { // Assuming the first mesh is the body
+            part = &fishModel.body;
+        }
+        else if (m_i == 1) { // Assuming the second mesh is the fin
+            part = &fishModel.fin;
+        }
+
+        // Debug output for part assignment
+        std::cout << "Part Pointer: " << part << std::endl;
+
+        if (part) {
+            part->data = modelData;
+
+            // Create VAO and VBOs for the mesh part
+            glGenVertexArrays(1, &part->vao);
+            glBindVertexArray(part->vao);
+
+            GLuint vp_vbo, vn_vbo;
+            glGenBuffers(1, &vp_vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
+            glBufferData(GL_ARRAY_BUFFER, part->data.mPointCount * sizeof(vec3), &part->data.mVertices[0], GL_STATIC_DRAW);
+
+            glGenBuffers(1, &vn_vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
+            glBufferData(GL_ARRAY_BUFFER, part->data.mPointCount * sizeof(vec3), &part->data.mNormals[0], GL_STATIC_DRAW);
+
+            // Link vertex positions
+            glEnableVertexAttribArray(loc1);
+            glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
+            glVertexAttribPointer(loc1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+            // Link vertex normals
+            glEnableVertexAttribArray(loc2);
+            glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
+            glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+            glBindVertexArray(0); // Unbind VAO when done
+        }
+    }
+
+    aiReleaseImport(scene);
+    return fishModel;
+}
+
+
+void render_fish(const FishModel& fishModel, float finAngle) {
+    std::cout << "fishModel: " << std::endl;
+    print(fishModel.position);
+    std::cout << "body vao: " << std::endl;
+    
+
+    // Set up body transformation
+    mat4 bodyModel = identity_mat4();
+    bodyModel = translate(bodyModel, fishModel.position);
+    bodyModel = rotate_y_deg(bodyModel, fishModel.rotationY);
+
+    int model_location = glGetUniformLocation(shaderProgramID, "model");
+    glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
+
+    glBindVertexArray(fishModel.body.vao);
+    glDrawArrays(GL_TRIANGLES, 0, fishModel.body.data.mPointCount);
+
+    // Set up fin transformation (hierarchical: start with body¡¯s transform)
+    mat4 finModel = bodyModel;
+    finModel = rotate_z_deg(finModel, finAngle);  // Apply oscillation to fin
+
+    glUniformMatrix4fv(model_location, 1, GL_FALSE, finModel.m);
+
+    glBindVertexArray(fishModel.fin.vao);
+    glDrawArrays(GL_TRIANGLES, 0, fishModel.fin.data.mPointCount);
 }
 
 #pragma endregion MESH LOADING
@@ -242,20 +363,36 @@ void display() {
         glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
     }
 
-    // Fish model matrix
-    mat4 fishModel = identity_mat4();
-    fishModel = translate(fishModel, fishPosition); // Position on the path
-
-    // Make the fish face the movement direction by adjusting Y rotation
-    float facingAngle = angle * (180.0f / M_PI);  // Convert radians to degrees
-    fishModel = rotate_y_deg(fishModel, facingAngle);
+    mat4 bodyModel = identity_mat4();
+    bodyModel = translate(bodyModel, fishModels[0].position);
+    bodyModel = rotate_y_deg(bodyModel, fishModels[0].rotationY);
 
     int model_location = glGetUniformLocation(shaderProgramID, "model");
-    glUniformMatrix4fv(model_location, 1, GL_FALSE, fishModel.m);
+    glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
 
-    // Draw fish model
-    glBindVertexArray(models[0].vao);
-    glDrawArrays(GL_TRIANGLES, 0, models[0].data.mPointCount);
+    //std::cout << fishModels[0].body.data.mPointCount << std::endl;
+
+    glBindVertexArray(fishModels[0].body.vao);
+    glDrawArrays(GL_TRIANGLES, 0, fishModels[0].body.data.mPointCount);
+
+    //for (const auto& model : fishModels) {
+    //    render_fish(model, 5);
+    //}
+
+    //// Fish model matrix
+    //mat4 fishModel = identity_mat4();
+    //fishModel = translate(fishModel, fishPosition); // Position on the path
+
+    //// Make the fish face the movement direction by adjusting Y rotation
+    //float facingAngle = angle * (180.0f / M_PI);  // Convert radians to degrees
+    //fishModel = rotate_y_deg(fishModel, facingAngle);
+
+    //int model_location = glGetUniformLocation(shaderProgramID, "model");
+    //glUniformMatrix4fv(model_location, 1, GL_FALSE, fishModel.m);
+
+    //// Draw fish model
+    //glBindVertexArray(models[0].vao);
+    //glDrawArrays(GL_TRIANGLES, 0, models[0].data.mPointCount);
 
     glutSwapBuffers();
 }
@@ -265,6 +402,8 @@ GLfloat rotate_y = 0.0f;
 
 void updateScene() {
     static DWORD last_time = 0;
+    static float maxFinAngle = 10;
+    static float finOscillationSpeed = 2.0f;
     DWORD curr_time = timeGetTime();
     if (last_time == 0)
         last_time = curr_time;
@@ -279,6 +418,9 @@ void updateScene() {
     float z = traceRadius * sinf(angle);
     fishPosition = vec3(x, 0.0f, z); // Update fish position along trace
 
+    float finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
+
+
     glutPostRedisplay();
 }
 
@@ -290,8 +432,9 @@ void init() {
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
     models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), -45.0f));
-    models.push_back(load_model("cube.dae", vec3(0.0f, 5.0f, -10.0f), 0.0f));
-    models.push_back(load_model("simple_fish.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
+    //models.push_back(load_model("cube.dae", vec3(0.0f, 5.0f, -10.0f), 0.0f));
+    //models.push_back(load_model("simple_fish.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
+    fishModels.push_back(load_fish_model("simple_fish5.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
 
 }
 
