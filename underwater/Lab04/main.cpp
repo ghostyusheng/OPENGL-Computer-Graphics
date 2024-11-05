@@ -437,6 +437,8 @@ void renderParticles() {
 
 
 void display() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     // Set background color to a deep blue
@@ -494,6 +496,7 @@ void display() {
 
         // Update and render particles
 
+    updateParticles();
     renderParticles(); // Render particles
 
     glutSwapBuffers();
@@ -531,18 +534,7 @@ void updateScene() {
         fish.finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
     }
 
-    for (auto& p : particles) {
-        p.position.v[1] += p.speed * 0.01f; // Move particle upward
-
-        // Reset position when particle goes out of bounds
-        if (p.position.v[1] > 5.0f) {
-            p.position.v[1] = -5.0f;
-            p.position.v[0] = rand() % 20 - 10;
-            p.position.v[2] = rand() % 20 - 10;
-        }
-    }
-
-    updateParticles();
+    /*updateParticles();*/
     glutPostRedisplay(); // Request a redraw to update the display
 }
 
