@@ -61,8 +61,8 @@ std::vector<Particle> particles;
 void initializeParticles() {
     for (int i = 0; i < 100; ++i) {
         Particle p;
-        p.position = vec3(rand() % 20 - 10, rand() % 10 - 5, rand() % 20 - 10); // Random positions
-        p.speed = 0.1f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 0.2f)); // Random speed
+        p.position = vec3(rand() % 20 - 10, rand() % 10, rand() % 20 - 10); // 随机位置
+        p.speed = 0.1f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 0.2f)); // 随机速度
         particles.push_back(p);
     }
 }
@@ -126,6 +126,7 @@ GLuint loadTexture(const char* filePath) {
         // Upload texture data to OpenGL
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
+        std::cout << "Texture loaded: " << filePath << " (" << width << "x" << height << ")" << std::endl; // Debug info
     }
     else {
         std::cerr << "Failed to load texture: " << filePath << std::endl;
@@ -142,6 +143,7 @@ GLuint loadTexture(const char* filePath) {
 
     return textureID;
 }
+
 
 
 #pragma region MESH LOADING
@@ -292,9 +294,9 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
 
 
 void render_fish(const FishModel& fishModel) {
-    std::cout << "fishModel: " << std::endl;
+    /*std::cout << "fishModel: " << std::endl;
     print(fishPosition);
-    std::cout << "body vao: " << std::endl;
+    std::cout << "body vao: " << std::endl;*/
     
 
     // Set up body transformation
@@ -400,18 +402,17 @@ void updateParticles() {
 
         // Reset position when particle goes out of bounds
         if (p.position.v[1] > 5.0f) {
-            p.position.v[1] = -5.0f;
-            p.position.v[0] = rand() % 20 - 10;
-            p.position.v[2] = rand() % 20 - 10;
+            p.position.v[1] = -5.0f; // Reset to bottom
+            p.position.v[0] = rand() % 20 - 10; // Random x position
+            p.position.v[2] = rand() % 20 - 10; // Random z position
         }
     }
 }
 
 
+
 void renderParticles() {
     glUseProgram(shaderProgramID);
-
-    // Bind particle texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, particleTextureID);
 
@@ -419,19 +420,21 @@ void renderParticles() {
     glUniform1i(textureLocation, 0);
 
     for (const auto& p : particles) {
-        mat4 particleModel = translate(identity_mat4(), p.position);
+        mat4 particleModel = translate(identity_mat4(), p.position); // Use actual position
 
         int model_location = glGetUniformLocation(shaderProgramID, "model");
         glUniformMatrix4fv(model_location, 1, GL_FALSE, particleModel.m);
 
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-0.1f, -0.1f, 0);
-        glTexCoord2f(1, 0); glVertex3f(0.1f, -0.1f, 0);
-        glTexCoord2f(1, 1); glVertex3f(0.1f, 0.1f, 0);
-        glTexCoord2f(0, 1); glVertex3f(-0.1f, 0.1f, 0);
+        glTexCoord2f(0, 0); glVertex3f(-0.3f, -0.3f, 0);
+        glTexCoord2f(1, 0); glVertex3f(0.3f, -0.3f, 0);
+        glTexCoord2f(1, 1); glVertex3f(0.3f, 0.3f, 0);
+        glTexCoord2f(0, 1); glVertex3f(-0.3f, 0.3f, 0);
         glEnd();
     }
 }
+
+
 
 void display() {
     glEnable(GL_DEPTH_TEST);
@@ -489,7 +492,9 @@ void display() {
         render_fish(model);
     }
 
-    renderParticles();
+        // Update and render particles
+
+    renderParticles(); // Render particles
 
     glutSwapBuffers();
 }
@@ -551,9 +556,10 @@ void init() {
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
     // Load and bind the texture for particles
-    particleTextureID = loadTexture("path/to/your/texture.png");
+    particleTextureID = loadTexture("test.jpg");
 
     models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), -45.0f));
+    models.push_back(load_model("monkey.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f));
 
     // Initialize multiple fish models
     for (int i = 0; i < 5; ++i) {
@@ -562,6 +568,9 @@ void init() {
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
         fishModels.push_back(fish);
     }
+
+    // Initialize particles
+    initializeParticles(); // Call to initialize particles
 }
 
 
