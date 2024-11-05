@@ -155,6 +155,8 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
         return fishModel;
     }
 
+    std::cout << "Mesh count: " << scene->mNumMeshes << std::endl;
+
     // Iterate through each mesh in the scene
     for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
         const aiMesh* mesh = scene->mMeshes[m_i];

@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 4.2.3 LTS commit date:2024-10-14, commit time:15:20, hash:0e22e4fcea03</authoring_tool>
     </contributor>
-    <created>2024-11-05T21:24:54</created>
-    <modified>2024-11-05T21:24:54</modified>
+    <created>2024-11-05T21:37:19</created>
+    <modified>2024-11-05T21:37:19</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -208,23 +208,6 @@
         </technique>
       </profile_COMMON>
     </effect>
-    <effect id="Material_002-effect">
-      <profile_COMMON>
-        <technique sid="common">
-          <lambert>
-            <emission>
-              <color sid="emission">0 0 0 1</color>
-            </emission>
-            <diffuse>
-              <color sid="diffuse">0.8 0.8 0.8 1</color>
-            </diffuse>
-            <index_of_refraction>
-              <float sid="ior">1.45</float>
-            </index_of_refraction>
-          </lambert>
-        </technique>
-      </profile_COMMON>
-    </effect>
   </library_effects>
   <library_images/>
   <library_materials>
@@ -233,9 +216,6 @@
     </material>
     <material id="Material_001-material" name="Material.001">
       <instance_effect url="#Material_001-effect"/>
-    </material>
-    <material id="Material_002-material" name="Material.002">
-      <instance_effect url="#Material_002-effect"/>
     </material>
   </library_materials>
   <library_geometries>
@@ -319,48 +299,6 @@
           <input semantic="VERTEX" source="#body_001-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#body_001-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#body_001-mesh-map-0" offset="2" set="0"/>
-          <p>4 0 0 2 0 1 0 0 2 2 1 3 7 1 4 3 1 5 6 2 6 5 2 7 7 2 8 1 3 9 7 3 10 5 3 11 0 4 12 3 4 13 1 4 14 4 5 15 1 5 16 5 5 17 4 6 18 6 6 19 2 6 20 2 7 21 6 7 22 7 7 23 6 8 24 4 8 25 5 8 26 1 9 27 3 9 28 7 9 29 0 10 30 2 10 31 3 10 32 4 11 33 0 11 34 1 11 35</p>
-        </triangles>
-      </mesh>
-    </geometry>
-    <geometry id="body_002-mesh" name="body.002">
-      <mesh>
-        <source id="body_002-mesh-positions">
-          <float_array id="body_002-mesh-positions-array" count="24">1 1 1 1 1 -1 1 -1 1 1 -1 -1 -1 1 1 -1 1 -1 -1 -1 1 -1 -1 -1</float_array>
-          <technique_common>
-            <accessor source="#body_002-mesh-positions-array" count="8" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="body_002-mesh-normals">
-          <float_array id="body_002-mesh-normals-array" count="36">0 0 1 0 -1 0 -1 0 0 0 0 -1 1 0 0 0 1 0 0 0 1 0 -1 0 -1 0 0 0 0 -1 1 0 0 0 1 0</float_array>
-          <technique_common>
-            <accessor source="#body_002-mesh-normals-array" count="12" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="body_002-mesh-map-0">
-          <float_array id="body_002-mesh-map-0-array" count="72">0.875 0.5 0.625 0.75 0.625 0.5 0.625 0.75 0.375 1 0.375 0.75 0.625 0 0.375 0.25 0.375 0 0.375 0.5 0.125 0.75 0.125 0.5 0.625 0.5 0.375 0.75 0.375 0.5 0.625 0.25 0.375 0.5 0.375 0.25 0.875 0.5 0.875 0.75 0.625 0.75 0.625 0.75 0.625 1 0.375 1 0.625 0 0.625 0.25 0.375 0.25 0.375 0.5 0.375 0.75 0.125 0.75 0.625 0.5 0.625 0.75 0.375 0.75 0.625 0.25 0.625 0.5 0.375 0.5</float_array>
-          <technique_common>
-            <accessor source="#body_002-mesh-map-0-array" count="36" stride="2">
-              <param name="S" type="float"/>
-              <param name="T" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <vertices id="body_002-mesh-vertices">
-          <input semantic="POSITION" source="#body_002-mesh-positions"/>
-        </vertices>
-        <triangles material="Material_002-material" count="12">
-          <input semantic="VERTEX" source="#body_002-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#body_002-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#body_002-mesh-map-0" offset="2" set="0"/>
           <p>4 0 0 2 0 1 0 0 2 2 1 3 7 1 4 3 1 5 6 2 6 5 2 7 7 2 8 1 3 9 7 3 10 5 3 11 0 4 12 3 4 13 1 4 14 4 5 15 1 5 16 5 5 17 4 6 18 6 6 19 2 6 20 2 7 21 6 7 22 7 7 23 6 8 24 4 8 25 5 8 26 1 9 27 3 9 28 7 9 29 0 10 30 2 10 31 3 10 32 4 11 33 0 11 34 1 11 35</p>
         </triangles>
       </mesh>
@@ -449,105 +387,35 @@
         </triangles>
       </mesh>
     </geometry>
-    <geometry id="fin_002-mesh" name="fin.002">
-      <mesh>
-        <source id="fin_002-mesh-positions">
-          <float_array id="fin_002-mesh-positions-array" count="24">-1 -1 -1 -1 -1 1 -1 1 -1 -1 1 1 1 -1 -1 1 -1 1 1 1 -1 1 1 1</float_array>
-          <technique_common>
-            <accessor source="#fin_002-mesh-positions-array" count="8" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="fin_002-mesh-normals">
-          <float_array id="fin_002-mesh-normals-array" count="36">-1 0 0 0 1 0 1 0 0 0 -1 0 0 0 -1 0 0 1 -1 0 0 0 1 0 1 0 0 0 -1 0 0 0 -1 0 0 1</float_array>
-          <technique_common>
-            <accessor source="#fin_002-mesh-normals-array" count="12" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="fin_002-mesh-map-0">
-          <float_array id="fin_002-mesh-map-0-array" count="72">0.625 0 0.375 0.25 0.375 0 0.625 0.25 0.375 0.5 0.375 0.25 0.625 0.5 0.375 0.75 0.375 0.5 0.625 0.75 0.375 1 0.375 0.75 0.375 0.5 0.125 0.75 0.125 0.5 0.875 0.5 0.625 0.75 0.625 0.5 0.625 0 0.625 0.25 0.375 0.25 0.625 0.25 0.625 0.5 0.375 0.5 0.625 0.5 0.625 0.75 0.375 0.75 0.625 0.75 0.625 1 0.375 1 0.375 0.5 0.375 0.75 0.125 0.75 0.875 0.5 0.875 0.75 0.625 0.75</float_array>
-          <technique_common>
-            <accessor source="#fin_002-mesh-map-0-array" count="36" stride="2">
-              <param name="S" type="float"/>
-              <param name="T" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <vertices id="fin_002-mesh-vertices">
-          <input semantic="POSITION" source="#fin_002-mesh-positions"/>
-        </vertices>
-        <triangles count="12">
-          <input semantic="VERTEX" source="#fin_002-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#fin_002-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#fin_002-mesh-map-0" offset="2" set="0"/>
-          <p>1 0 0 2 0 1 0 0 2 3 1 3 6 1 4 2 1 5 7 2 6 4 2 7 6 2 8 5 3 9 0 3 10 4 3 11 6 4 12 0 4 13 2 4 14 3 5 15 5 5 16 7 5 17 1 6 18 3 6 19 2 6 20 3 7 21 7 7 22 6 7 23 7 8 24 5 8 25 4 8 26 5 9 27 1 9 28 0 9 29 6 10 30 4 10 31 0 10 32 3 11 33 1 11 34 5 11 35</p>
-        </triangles>
-      </mesh>
-    </geometry>
   </library_geometries>
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="Camera" name="Camera" type="NODE">
-        <scale sid="scale">1 1 1</scale>
-        <rotate sid="rotationZ">0 0 1 46.69194</rotate>
-        <rotate sid="rotationY">0 1 0 0</rotate>
-        <rotate sid="rotationX">1 0 0 63.5593</rotate>
-        <translate sid="location">7.358891 -6.925791 4.958309</translate>
+        <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.358891 0.7276763 0.3054208 -0.6141704 -6.925791 0 0.8953956 0.4452714 4.958309 0 0 0 1</matrix>
         <instance_camera url="#Camera-camera"/>
       </node>
       <node id="Camera_001" name="Camera.001" type="NODE">
-        <scale sid="scale">1 1 1</scale>
-        <rotate sid="rotationZ">0 0 1 46.69194</rotate>
-        <rotate sid="rotationY">0 1 0 0</rotate>
-        <rotate sid="rotationX">1 0 0 63.5593</rotate>
-        <translate sid="location">7.358891 -6.925791 4.958309</translate>
+        <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.358891 0.7276763 0.3054208 -0.6141704 -6.925791 0 0.8953956 0.4452714 4.958309 0 0 0 1</matrix>
         <instance_camera url="#Camera_001-camera"/>
       </node>
       <node id="Camera_002" name="Camera.002" type="NODE">
-        <scale sid="scale">1 1 1</scale>
-        <rotate sid="rotationZ">0 0 1 46.69194</rotate>
-        <rotate sid="rotationY">0 1 0 0</rotate>
-        <rotate sid="rotationX">1 0 0 63.5593</rotate>
-        <translate sid="location">7.358891 -6.925791 4.958309</translate>
+        <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.358891 0.7276763 0.3054208 -0.6141704 -6.925791 0 0.8953956 0.4452714 4.958309 0 0 0 1</matrix>
         <instance_camera url="#Camera_002-camera"/>
       </node>
       <node id="Light" name="Light" type="NODE">
-        <scale sid="scale">1 0.9999999 1</scale>
-        <rotate sid="rotationZ">0 0 1 106.9363</rotate>
-        <rotate sid="rotationY">0 1 0 3.163707</rotate>
-        <rotate sid="rotationX">1 0 0 37.26105</rotate>
-        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
         <instance_light url="#Light-light"/>
       </node>
       <node id="Light_001" name="Light.001" type="NODE">
-        <scale sid="scale">1 0.9999999 1</scale>
-        <rotate sid="rotationZ">0 0 1 106.9363</rotate>
-        <rotate sid="rotationY">0 1 0 3.163707</rotate>
-        <rotate sid="rotationX">1 0 0 37.26105</rotate>
-        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
         <instance_light url="#Light_001-light"/>
       </node>
       <node id="Light_002" name="Light.002" type="NODE">
-        <scale sid="scale">1 0.9999999 1</scale>
-        <rotate sid="rotationZ">0 0 1 106.9363</rotate>
-        <rotate sid="rotationY">0 1 0 3.163707</rotate>
-        <rotate sid="rotationX">1 0 0 37.26105</rotate>
-        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
         <instance_light url="#Light_002-light"/>
       </node>
       <node id="body" name="body" type="NODE">
-        <scale sid="scale">1 0.214277 0.251868</scale>
-        <rotate sid="rotationZ">0 0 1 0</rotate>
-        <rotate sid="rotationY">0 1 0 0</rotate>
-        <rotate sid="rotationX">1 0 0 0</rotate>
-        <translate sid="location">0 0 0</translate>
+        <matrix sid="transform">1 0 0 0 0 -0.214277 0 0 0 0 0.251868 0 0 0 0 1</matrix>
         <instance_geometry url="#body-mesh" name="body">
           <bind_material>
             <technique_common>
@@ -559,11 +427,7 @@
         </instance_geometry>
       </node>
       <node id="body_001" name="body.001" type="NODE">
-        <scale sid="scale">1 0.214277 0.251868</scale>
-        <rotate sid="rotationZ">0 0 1 0</rotate>
-        <rotate sid="rotationY">0 1 0 0</rotate>
-        <rotate sid="rotationX">1 0 0 0</rotate>
-        <translate sid="location">0 0 0.6418971</translate>
+        <matrix sid="transform">1 0 0 0 0 -0.214277 0 0 0 0 0.251868 0.6418971 0 0 0 1</matrix>
         <instance_geometry url="#body_001-mesh" name="body.001">
           <bind_material>
             <technique_common>
@@ -574,45 +438,13 @@
           </bind_material>
         </instance_geometry>
       </node>
-      <node id="body_002" name="body.002" type="NODE">
-        <scale sid="scale">1 0.214277 0.251868</scale>
-        <rotate sid="rotationZ">0 0 1 0</rotate>
-        <rotate sid="rotationY">0 1 0 0</rotate>
-        <rotate sid="rotationX">1 0 0 0</rotate>
-        <translate sid="location">0 0 0.6418971</translate>
-        <instance_geometry url="#body_002-mesh" name="body.002">
-          <bind_material>
-            <technique_common>
-              <instance_material symbol="Material_002-material" target="#Material_002-material">
-                <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
-              </instance_material>
-            </technique_common>
-          </bind_material>
-        </instance_geometry>
-      </node>
       <node id="fin" name="fin" type="NODE">
-        <scale sid="scale">0.2458311 0.08246209 0.2458764</scale>
-        <rotate sid="rotationZ">0 0 1 -1.167914</rotate>
-        <rotate sid="rotationY">0 1 0 -180</rotate>
-        <rotate sid="rotationX">1 0 0 0</rotate>
-        <translate sid="location">1.216182 -0.01023566 0.01804686</translate>
+        <matrix sid="transform">-0.24578 -0.001680786 0 1.368876 0.005010661 -0.08244496 0 -0.01023566 0 0 -0.2458764 0.01804686 0 0 0 1</matrix>
         <instance_geometry url="#fin-mesh" name="fin"/>
       </node>
       <node id="fin_001" name="fin.001" type="NODE">
-        <scale sid="scale">0.2458311 0.08246209 0.2458764</scale>
-        <rotate sid="rotationZ">0 0 1 -1.167914</rotate>
-        <rotate sid="rotationY">0 1 0 -180</rotate>
-        <rotate sid="rotationX">1 0 0 0</rotate>
-        <translate sid="location">1.216182 -0.01023566 0.7432798</translate>
+        <matrix sid="transform">-0.24578 -0.001680786 0 1.216182 0.005010661 -0.08244496 0 -0.01023566 0 0 -0.2458764 0.7432798 0 0 0 1</matrix>
         <instance_geometry url="#fin_001-mesh" name="fin.001"/>
-      </node>
-      <node id="fin_002" name="fin.002" type="NODE">
-        <scale sid="scale">0.2458311 0.08246209 0.2458764</scale>
-        <rotate sid="rotationZ">0 0 1 -1.167914</rotate>
-        <rotate sid="rotationY">0 1 0 -180</rotate>
-        <rotate sid="rotationX">1 0 0 0</rotate>
-        <translate sid="location">1.216182 -0.01023566 0.7432798</translate>
-        <instance_geometry url="#fin_002-mesh" name="fin.002"/>
       </node>
     </visual_scene>
   </library_visual_scenes>
