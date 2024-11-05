@@ -18,6 +18,7 @@
 
 // Project includes
 #include "maths_funcs.h"
+#include "corecrt_math_defines.h"
 
 vec3 cameraPosition(0.0f, 0.0f, 10.0f);
 float cameraRotationY = 0.0f; // For rotation around the Y-axis
@@ -25,6 +26,11 @@ float cameraRotationX = 0.0f; // New for vertical rotation
 float cameraDistance = 10.0f; // Camera distance for zoom control
 bool leftMousePressed = false;
 int lastMouseX, lastMouseY;
+
+vec3 fishPosition(0.0f, 0.0f, 0.0f);
+float traceRadius = 5.0f;  // Radius of the swimming circle
+float traceSpeed = 0.5f;   // Speed of the fish movement
+float angle = 0.0f;        // Angle along the path
 
 
 
@@ -220,7 +226,6 @@ void display() {
     view = rotate_x_deg(view, cameraRotationX);                // Vertical rotation
     view = rotate_y_deg(view, cameraRotationY);                // Horizontal rotation
 
-
     glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
 
     for (const auto& model : models) {
@@ -237,6 +242,21 @@ void display() {
         glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
     }
 
+    // Fish model matrix
+    mat4 fishModel = identity_mat4();
+    fishModel = translate(fishModel, fishPosition); // Position on the path
+
+    // Make the fish face the movement direction by adjusting Y rotation
+    float facingAngle = angle * (180.0f / M_PI);  // Convert radians to degrees
+    fishModel = rotate_y_deg(fishModel, facingAngle);
+
+    int model_location = glGetUniformLocation(shaderProgramID, "model");
+    glUniformMatrix4fv(model_location, 1, GL_FALSE, fishModel.m);
+
+    // Draw fish model
+    glBindVertexArray(models[0].vao);
+    glDrawArrays(GL_TRIANGLES, 0, models[0].data.mPointCount);
+
     glutSwapBuffers();
 }
 
@@ -251,11 +271,17 @@ void updateScene() {
     float delta = (curr_time - last_time) * 0.001f;
     last_time = curr_time;
 
-    rotate_y += 20.0f * delta;
-    rotate_y = fmodf(rotate_y, 360.0f);
+    angle += traceSpeed * delta; // Update angle based on speed
+    if (angle >= 360.0f) angle -= 360.0f; // Keep angle in range
+
+    // Calculate new position along circular path
+    float x = traceRadius * cosf(angle);
+    float z = traceRadius * sinf(angle);
+    fishPosition = vec3(x, 0.0f, z); // Update fish position along trace
 
     glutPostRedisplay();
 }
+
 
 void init() {
     GLuint shaderProgramID = CompileShaders();
