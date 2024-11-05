@@ -227,15 +227,15 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
 }
 
 
-void render_fish(const FishModel& fishModel, float finAngle) {
+void render_fish(const FishModel& fishModel, vec3 fishPosition, float finAngle) {
     std::cout << "fishModel: " << std::endl;
-    print(fishModel.position);
+    print(fishPosition);
     std::cout << "body vao: " << std::endl;
     
 
     // Set up body transformation
     mat4 bodyModel = identity_mat4();
-    bodyModel = translate(bodyModel, fishModel.position);
+    bodyModel = translate(bodyModel, fishPosition);
     bodyModel = rotate_y_deg(bodyModel, fishModel.rotationY);
 
     int model_location = glGetUniformLocation(shaderProgramID, "model");
@@ -378,7 +378,7 @@ void display() {
     glDrawArrays(GL_TRIANGLES, 0, fishModels[0].body.data.mPointCount);*/
 
     for (const auto& model : fishModels) {
-        render_fish(model, finAngle);
+        render_fish(model, fishPosition, finAngle);
     }
 
     //// Fish model matrix
