@@ -342,8 +342,18 @@ GLuint CompileShaders() {
 void display() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
+    // Set background color to a deep blue
+    glClearColor(0.0f, 0.0f, 0.3f, 1.0f); // Adjust values to get the desired color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Enable fog
+    glEnable(GL_FOG);
+    glFogf(GL_FOG_MODE, GL_LINEAR);
+    glFogf(GL_FOG_START, 5.0f);    // Start of fog effect (closer for dense water effect)
+    glFogf(GL_FOG_END, 50.0f);     // End of fog effect
+    float fogColor[4] = { 0.0f, 0.2f, 0.3f, 1.0f }; // Blue-greenish color for fog
+    glFogfv(GL_FOG_COLOR, fogColor);
+
     glUseProgram(shaderProgramID);
 
     int view_mat_location = glGetUniformLocation(shaderProgramID, "view");
