@@ -16,6 +16,8 @@
 #include <assimp/scene.h> // collects data
 #include <assimp/postprocess.h> // various extra operations
 
+#include <random>
+
 // Project includes
 #include "maths_funcs.h"
 #include "corecrt_math_defines.h"
@@ -33,6 +35,11 @@ float traceSpeed = 0.5f;   // Speed of the fish movement
 float angle = 0.0f;        // Angle along the path
 static float finAngle = 0.0f; // Declare finAngle as static/global
 
+static std::default_random_engine e;
+
+float get_rand(int min, int max) {
+    return e() % (max - min) + min;
+}
 
 /*----------------------------------------------------------------------------
 MESH TO LOAD
@@ -66,6 +73,8 @@ struct FishModel {
     ModelPart fin;
     vec3 position;
     float rotationY;
+    vec3 direction; // New attribute for swimming direction
+    float finAngle;
 };
 
 std::vector<Model> models; // Vector to hold multiple models
@@ -227,7 +236,7 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
 }
 
 
-void render_fish(const FishModel& fishModel, vec3 fishPosition, float finAngle) {
+void render_fish(const FishModel& fishModel) {
     std::cout << "fishModel: " << std::endl;
     print(fishPosition);
     std::cout << "body vao: " << std::endl;
@@ -235,7 +244,7 @@ void render_fish(const FishModel& fishModel, vec3 fishPosition, float finAngle) 
 
     // Set up body transformation
     mat4 bodyModel = identity_mat4();
-    bodyModel = translate(bodyModel, fishPosition);
+    bodyModel = translate(bodyModel, fishModel.position);
     bodyModel = rotate_y_deg(bodyModel, fishModel.rotationY);
 
     int model_location = glGetUniformLocation(shaderProgramID, "model");
@@ -246,7 +255,7 @@ void render_fish(const FishModel& fishModel, vec3 fishPosition, float finAngle) 
 
     // Set up fin transformation (hierarchical: start with body¡¯s transform)
     mat4 finModel = bodyModel;
-    finModel = rotate_z_deg(finModel, finAngle);  // Apply oscillation to fin
+    finModel = rotate_z_deg(finModel, fishModel.finAngle);  // Apply oscillation to fin
 
     glUniformMatrix4fv(model_location, 1, GL_FALSE, finModel.m);
 
@@ -372,29 +381,9 @@ void display() {
     int model_location = glGetUniformLocation(shaderProgramID, "model");
     glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
 
-    //std::cout << fishModels[0].body.data.mPointCount << std::endl;
-
-    /*glBindVertexArray(fishModels[0].body.vao);
-    glDrawArrays(GL_TRIANGLES, 0, fishModels[0].body.data.mPointCount);*/
-
     for (const auto& model : fishModels) {
-        render_fish(model, fishPosition, finAngle);
+        render_fish(model);
     }
-
-    //// Fish model matrix
-    //mat4 fishModel = identity_mat4();
-    //fishModel = translate(fishModel, fishPosition); // Position on the path
-
-    //// Make the fish face the movement direction by adjusting Y rotation
-    //float facingAngle = angle * (180.0f / M_PI);  // Convert radians to degrees
-    //fishModel = rotate_y_deg(fishModel, facingAngle);
-
-    //int model_location = glGetUniformLocation(shaderProgramID, "model");
-    //glUniformMatrix4fv(model_location, 1, GL_FALSE, fishModel.m);
-
-    //// Draw fish model
-    //glBindVertexArray(models[0].vao);
-    //glDrawArrays(GL_TRIANGLES, 0, models[0].data.mPointCount);
 
     glutSwapBuffers();
 }
@@ -412,19 +401,29 @@ void updateScene() {
     float delta = (curr_time - last_time) * 0.001f;
     last_time = curr_time;
 
-    angle += traceSpeed * delta; // Update angle based on speed
-    if (angle >= 360.0f) angle -= 360.0f; // Keep angle in range
+    // Update each fish model
+    for (auto& fish : fishModels) {
+        // Update fish position based on its direction
+        fish.position.v[0] += fish.direction.v[0] * traceSpeed * delta; // x
+        fish.position.v[1] += fish.direction.v[1] * traceSpeed * delta; // y
+        fish.position.v[2] += fish.direction.v[2] * traceSpeed * delta; // z
 
-    // Calculate new position along circular path
-    float x = traceRadius * cosf(angle);
-    float z = traceRadius * sinf(angle);
-    fishPosition = vec3(x, 0.0f, z); // Update fish position along trace
+        // Check if the fish has reached a certain distance to reverse direction
+        if (fish.position.v[0] >= traceRadius || fish.position.v[0] <= -traceRadius) {
+            fish.direction.v[0] = -fish.direction.v[0]; // Reverse direction
+        }
+        if (fish.position.v[2] >= traceRadius || fish.position.v[2] <= -traceRadius) {
+            fish.direction.v[2] = -fish.direction.v[2]; // Reverse direction
+        }
 
-    finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
+        // Update fin angle for animation
+        fish.finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
+    }
 
-
-    glutPostRedisplay();
+    glutPostRedisplay(); // Request a redraw to update the display
 }
+
+
 
 
 void init() {
@@ -434,11 +433,16 @@ void init() {
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
     models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), -45.0f));
-    //models.push_back(load_model("cube.dae", vec3(0.0f, 5.0f, -10.0f), 0.0f));
-    //models.push_back(load_model("simple_fish.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
-    fishModels.push_back(load_fish_model("simple_fish6.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
 
+    // Initialize multiple fish models
+    for (int i = 0; i < 5; ++i) {
+        FishModel fish;
+        fish = load_fish_model("simple_fish6.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f);
+        fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
+        fishModels.push_back(fish);
+    }
 }
+
 
 void keypress(unsigned char key, int x, int y) {
     float movementSpeed = 0.5f; // Speed of camera movement
