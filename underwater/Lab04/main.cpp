@@ -404,8 +404,8 @@ GLfloat rotate_y = 0.0f;
 
 void updateScene() {
     static DWORD last_time = 0;
-    static float maxFinAngle = 10;
-    static float finOscillationSpeed = 2.0f;
+    static float maxFinAngle = 1;
+    static float finOscillationSpeed = 0.15f;
     DWORD curr_time = timeGetTime();
     if (last_time == 0)
         last_time = curr_time;
@@ -436,7 +436,7 @@ void init() {
     models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), -45.0f));
     //models.push_back(load_model("cube.dae", vec3(0.0f, 5.0f, -10.0f), 0.0f));
     //models.push_back(load_model("simple_fish.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
-    fishModels.push_back(load_fish_model("simple_fish5.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
+    fishModels.push_back(load_fish_model("simple_fish6.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
 
 }
 
