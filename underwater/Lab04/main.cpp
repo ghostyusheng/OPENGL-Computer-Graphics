@@ -22,6 +22,9 @@
 #include "maths_funcs.h"
 #include "corecrt_math_defines.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 vec3 cameraPosition(0.0f, 0.0f, 10.0f);
 float cameraRotationY = 0.0f; // For rotation around the Y-axis
 float cameraRotationX = 0.0f; // New for vertical rotation
@@ -47,6 +50,23 @@ MESH TO LOAD
 #define MESH_NAME "monkey.dae"
 /*----------------------------------------------------------------------------
 ----------------------------------------------------------------------------*/
+
+struct Particle {
+    vec3 position;
+    float speed;
+};
+
+// Initialize particles
+std::vector<Particle> particles;
+void initializeParticles() {
+    for (int i = 0; i < 100; ++i) {
+        Particle p;
+        p.position = vec3(rand() % 20 - 10, rand() % 10 - 5, rand() % 20 - 10); // Random positions
+        p.speed = 0.1f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 0.2f)); // Random speed
+        particles.push_back(p);
+    }
+}
+
 
 #pragma region SimpleTypes
 typedef struct {
@@ -88,6 +108,41 @@ int width = 800;
 int height = 600;
 
 GLuint loc1, loc2;
+
+GLuint particleTextureID;
+
+
+GLuint loadTexture(const char* filePath) {
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    // Load the texture data
+    int width, height, channels;
+    unsigned char* data = stbi_load(filePath, &width, &height, &channels, 0);
+    if (data) {
+        GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
+
+        // Upload texture data to OpenGL
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cerr << "Failed to load texture: " << filePath << std::endl;
+        stbi_image_free(data);
+        return 0;
+    }
+    stbi_image_free(data);
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    return textureID;
+}
+
 
 #pragma region MESH LOADING
 ModelData load_mesh(const char* file_name) {
@@ -339,6 +394,45 @@ GLuint CompileShaders() {
 }
 #pragma endregion SHADER_FUNCTIONS
 
+void updateParticles() {
+    for (auto& p : particles) {
+        p.position.v[1] += p.speed * 0.01f; // Move particle upward
+
+        // Reset position when particle goes out of bounds
+        if (p.position.v[1] > 5.0f) {
+            p.position.v[1] = -5.0f;
+            p.position.v[0] = rand() % 20 - 10;
+            p.position.v[2] = rand() % 20 - 10;
+        }
+    }
+}
+
+
+void renderParticles() {
+    glUseProgram(shaderProgramID);
+
+    // Bind particle texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, particleTextureID);
+
+    int textureLocation = glGetUniformLocation(shaderProgramID, "particleTexture");
+    glUniform1i(textureLocation, 0);
+
+    for (const auto& p : particles) {
+        mat4 particleModel = translate(identity_mat4(), p.position);
+
+        int model_location = glGetUniformLocation(shaderProgramID, "model");
+        glUniformMatrix4fv(model_location, 1, GL_FALSE, particleModel.m);
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0); glVertex3f(-0.1f, -0.1f, 0);
+        glTexCoord2f(1, 0); glVertex3f(0.1f, -0.1f, 0);
+        glTexCoord2f(1, 1); glVertex3f(0.1f, 0.1f, 0);
+        glTexCoord2f(0, 1); glVertex3f(-0.1f, 0.1f, 0);
+        glEnd();
+    }
+}
+
 void display() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -395,6 +489,8 @@ void display() {
         render_fish(model);
     }
 
+    renderParticles();
+
     glutSwapBuffers();
 }
 
@@ -430,6 +526,18 @@ void updateScene() {
         fish.finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
     }
 
+    for (auto& p : particles) {
+        p.position.v[1] += p.speed * 0.01f; // Move particle upward
+
+        // Reset position when particle goes out of bounds
+        if (p.position.v[1] > 5.0f) {
+            p.position.v[1] = -5.0f;
+            p.position.v[0] = rand() % 20 - 10;
+            p.position.v[2] = rand() % 20 - 10;
+        }
+    }
+
+    updateParticles();
     glutPostRedisplay(); // Request a redraw to update the display
 }
 
@@ -441,6 +549,9 @@ void init() {
 
     loc1 = glGetAttribLocation(shaderProgramID, "vertex_position");
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
+
+    // Load and bind the texture for particles
+    particleTextureID = loadTexture("path/to/your/texture.png");
 
     models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), -45.0f));
 
