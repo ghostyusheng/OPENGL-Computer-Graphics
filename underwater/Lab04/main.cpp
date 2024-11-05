@@ -21,6 +21,11 @@
 
 vec3 cameraPosition(0.0f, 0.0f, 10.0f);
 float cameraRotationY = 0.0f; // For rotation around the Y-axis
+float cameraRotationX = 0.0f; // New for vertical rotation
+float cameraDistance = 10.0f; // Camera distance for zoom control
+bool leftMousePressed = false;
+int lastMouseX, lastMouseY;
+
 
 
 /*----------------------------------------------------------------------------
@@ -210,8 +215,11 @@ void display() {
     glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 
     mat4 view = identity_mat4();
-    view = translate(view, -cameraPosition);
-    view = rotate_y_deg(view, cameraRotationY);
+    view = translate(view, vec3(0.0f, 0.0f, -cameraDistance)); // Apply zoom (camera distance)
+    view = translate(view, -cameraPosition);                   // Apply camera position for WASD
+    view = rotate_x_deg(view, cameraRotationX);                // Vertical rotation
+    view = rotate_y_deg(view, cameraRotationY);                // Horizontal rotation
+
 
     glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
 
@@ -255,15 +263,18 @@ void init() {
     loc1 = glGetAttribLocation(shaderProgramID, "vertex_position");
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
-    models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), 45.0f));
-    models.push_back(load_model("cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f));
-    models.push_back(load_model("cube_big.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
+    models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), -45.0f));
+    models.push_back(load_model("cube.dae", vec3(0.0f, 5.0f, -10.0f), 0.0f));
+    models.push_back(load_model("monkey.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
 
 }
 
 void keypress(unsigned char key, int x, int y) {
     float movementSpeed = 0.5f;
     float rotationSpeed = 5.0f;
+
+    std::cout << key << std::endl;
+    std::cout << cameraPosition.v[2] << std::endl << cameraPosition.v[0] << std::endl;
 
     switch (key) {
     case 'w': cameraPosition.v[2] -= movementSpeed; break;
@@ -278,6 +289,38 @@ void keypress(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+void mouseButton(int button, int state, int x, int y) {
+    std::cout << button << std::endl;
+    if (button == GLUT_LEFT_BUTTON) {
+        leftMousePressed = (state == GLUT_DOWN);
+        lastMouseX = x;
+        lastMouseY = y;
+    }
+    else if (button == 3) { // Scroll up
+        cameraDistance -= 1.0f;
+        if (cameraDistance < 2.0f) cameraDistance = 2.0f; // Prevent too close zoom
+    }
+    else if (button == 4) { // Scroll down
+        cameraDistance += 1.0f;
+        if (cameraDistance > 50.0f) cameraDistance = 50.0f; // Limit zoom-out distance
+    }
+}
+
+void mouseMotion(int x, int y) {
+    if (leftMousePressed) {
+        float dx = x - lastMouseX;
+        float dy = y - lastMouseY;
+        cameraRotationY += dx * 0.2f;
+        cameraRotationX += dy * 0.2f;
+        if (cameraRotationX > 89.0f) cameraRotationX = 89.0f; // Prevent flipping over top
+        if (cameraRotationX < -89.0f) cameraRotationX = -89.0f; // Prevent flipping over bottom
+        lastMouseX = x;
+        lastMouseY = y;
+        glutPostRedisplay();
+    }
+}
+
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -287,6 +330,8 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
     glutIdleFunc(updateScene);
     glutKeyboardFunc(keypress);
+    glutMouseFunc(mouseButton);
+    glutMotionFunc(mouseMotion);
 
     GLenum res = glewInit();
     if (res != GLEW_OK) {
