@@ -441,24 +441,48 @@ void init() {
 }
 
 void keypress(unsigned char key, int x, int y) {
-    float movementSpeed = 0.5f;
-    float rotationSpeed = 5.0f;
+    float movementSpeed = 0.5f; // Speed of camera movement
+    float rotationSpeed = 5.0f;  // Speed of camera rotation
 
-    std::cout << key << std::endl;
-    std::cout << cameraPosition.v[2] << std::endl << cameraPosition.v[0] << std::endl;
+    std::cout << "Key pressed: " << key << std::endl; // Debug output
 
     switch (key) {
-    case 'w': cameraPosition.v[2] -= movementSpeed; break;
-    case 's': cameraPosition.v[2] += movementSpeed; break;
-    case 'a': cameraPosition.v[0] -= movementSpeed; break;
-    case 'd': cameraPosition.v[0] += movementSpeed; break;
-    case 'q': cameraRotationY -= rotationSpeed; break;
-    case 'e': cameraRotationY += rotationSpeed; break;
-    case 'r': cameraPosition.v[1] += movementSpeed; break;
-    case 'f': cameraPosition.v[1] -= movementSpeed; break;
+    case 'w': // Move forward
+        cameraPosition.v[2] -= movementSpeed;
+        std::cout << "Moving Forward: " << cameraPosition.v[2] << std::endl;
+        break;
+    case 's': // Move backward
+        cameraPosition.v[2] += movementSpeed;
+        std::cout << "Moving Backward: " << cameraPosition.v[2] << std::endl;
+        break;
+    case 'a': // Move left
+        cameraPosition.v[0] -= movementSpeed;
+        std::cout << "Moving Left: " << cameraPosition.v[0] << std::endl;
+        break;
+    case 'd': // Move right
+        cameraPosition.v[0] += movementSpeed;
+        std::cout << "Moving Right: " << cameraPosition.v[0] << std::endl;
+        break;
+    case 'q': // Rotate left (yaw)
+        cameraRotationY -= rotationSpeed;
+        std::cout << "Rotating Left: " << cameraRotationY << std::endl;
+        break;
+    case 'e': // Rotate right (yaw)
+        cameraRotationY += rotationSpeed;
+        std::cout << "Rotating Right: " << cameraRotationY << std::endl;
+        break;
+    case 'r': // Move up
+        cameraPosition.v[1] += movementSpeed;
+        std::cout << "Moving Up: " << cameraPosition.v[1] << std::endl;
+        break;
+    case 'f': // Move down
+        cameraPosition.v[1] -= movementSpeed;
+        std::cout << "Moving Down: " << cameraPosition.v[1] << std::endl;
+        break;
     }
-    glutPostRedisplay();
+    glutPostRedisplay(); // Request a redraw to update the display with changes
 }
+
 
 void mouseButton(int button, int state, int x, int y) {
     std::cout << button << std::endl;
