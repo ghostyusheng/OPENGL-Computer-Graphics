@@ -218,6 +218,7 @@ void display() {
     for (const auto& model : models) {
         glBindVertexArray(model.vao);
 
+
         mat4 modelMatrix = identity_mat4();
         modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
         modelMatrix = translate(modelMatrix, model.position);
@@ -254,9 +255,9 @@ void init() {
     loc1 = glGetAttribLocation(shaderProgramID, "vertex_position");
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
-    models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, 0.0f), 0.0f));
-    models.push_back(load_model("d.dae", vec3(0.0f, 0.0f, -100.0f), 45.0f));
-    models.push_back(load_model("sword.dae", vec3(0.0f, 0.0f, 10.0f), 45.0f));
+    models.push_back(load_model("monkey.dae", vec3(0.0f, 0.0f, -10.0f), 45.0f));
+    models.push_back(load_model("cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f));
+    models.push_back(load_model("cube_big.dae", vec3(0.0f, -5.0f, -10.0f), 45.0f));
 
 }
 
