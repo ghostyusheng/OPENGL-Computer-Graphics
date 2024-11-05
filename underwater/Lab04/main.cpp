@@ -31,7 +31,7 @@ vec3 fishPosition(0.0f, 0.0f, 0.0f);
 float traceRadius = 5.0f;  // Radius of the swimming circle
 float traceSpeed = 0.5f;   // Speed of the fish movement
 float angle = 0.0f;        // Angle along the path
-
+static float finAngle = 0.0f; // Declare finAngle as static/global
 
 
 /*----------------------------------------------------------------------------
@@ -374,12 +374,12 @@ void display() {
 
     //std::cout << fishModels[0].body.data.mPointCount << std::endl;
 
-    glBindVertexArray(fishModels[0].body.vao);
-    glDrawArrays(GL_TRIANGLES, 0, fishModels[0].body.data.mPointCount);
+    /*glBindVertexArray(fishModels[0].body.vao);
+    glDrawArrays(GL_TRIANGLES, 0, fishModels[0].body.data.mPointCount);*/
 
-    //for (const auto& model : fishModels) {
-    //    render_fish(model, 5);
-    //}
+    for (const auto& model : fishModels) {
+        render_fish(model, finAngle);
+    }
 
     //// Fish model matrix
     //mat4 fishModel = identity_mat4();
@@ -420,7 +420,7 @@ void updateScene() {
     float z = traceRadius * sinf(angle);
     fishPosition = vec3(x, 0.0f, z); // Update fish position along trace
 
-    float finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
+    finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
 
 
     glutPostRedisplay();
