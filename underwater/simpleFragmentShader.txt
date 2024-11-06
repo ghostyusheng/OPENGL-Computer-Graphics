@@ -1,14 +1,17 @@
 #version 330 core
 
 in vec3 LightIntensity;
-in vec2 Texcoord; // 接收纹理坐标
+in vec2 Texcoord; // Received texture coordinates from the vertex shader
 
 out vec4 fragColor;
 
-uniform sampler2D particleTexture; // 粒子纹理
+uniform sampler2D objectTexture; // Object texture sampler (renamed for clarity)
 
 void main() {
-    vec4 textureColor = texture(particleTexture, Texcoord); // 从纹理中采样
-    vec3 finalColor = LightIntensity * textureColor.rgb; // 将光照强度与纹理颜色结合
-    fragColor = vec4(finalColor, textureColor.a); // 使用纹理的 alpha 值
+    // Sample color from the texture using Texcoord
+    vec4 textureColor = texture(objectTexture, Texcoord);
+
+    // Combine light intensity with the texture color
+    vec3 finalColor = LightIntensity * textureColor.rgb;
+    fragColor = vec4(finalColor, textureColor.a); // Use texture's alpha value
 }

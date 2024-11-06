@@ -40,6 +40,8 @@ static float finAngle = 0.0f; // Declare finAngle as static/global
 
 static std::default_random_engine e;
 
+GLuint textureID;
+
 float get_rand(int min, int max) {
     return e() % (max - min) + min;
 }
@@ -168,6 +170,10 @@ ModelData load_mesh(const char* file_name) {
                 const aiVector3D* vn = &(mesh->mNormals[v_i]);
                 modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
             }
+            if (mesh->HasTextureCoords(0)) {
+                const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
+                modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
+            }
         }
     }
 
@@ -204,6 +210,18 @@ Model load_model(const char* file_name, vec3 position, float rotationY) {
     glEnableVertexAttribArray(loc2);
     glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
     glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+    if (!model.data.mTextureCoords.empty()) {
+    GLuint vt_vbo;
+    glGenBuffers(1, &vt_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
+    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
+
+    // Link texture coordinates
+    GLint loc3 = glGetAttribLocation(shaderProgramID, "vertex_texcoord");
+    glEnableVertexAttribArray(loc3);
+    glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+}
 
     glBindVertexArray(0); // Unbind VAO when done setting it up
 
@@ -494,6 +512,12 @@ void display() {
         render_fish(model);
     }
 
+    // Set the texture as active texture unit 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);
+
+
         // Update and render particles
 
     updateParticles();
@@ -548,7 +572,8 @@ void init() {
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
     // Load and bind the texture for particles
-    particleTextureID = loadTexture("test.jpg");
+    particleTextureID = loadTexture("diffuse.jpg");
+    textureID = loadTexture("diffuse.jpg");
 
     models.push_back(load_model("pink_cube.dae", vec3(0.0f, 0.0f, -10.0f), 30.0f));
     models.push_back(load_model("monkey.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f));
