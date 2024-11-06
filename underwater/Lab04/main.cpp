@@ -135,6 +135,39 @@ GLuint loadTexture(const char* filePath) {
 
 
 #pragma region MESH LOADING
+ModelData load_obj_mesh(const char* file_name) {
+    ModelData modelData;
+
+    const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
+    if (!scene) {
+        fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
+        return modelData;
+    }
+
+    for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
+        const aiMesh* mesh = scene->mMeshes[m_i];
+        modelData.mPointCount += mesh->mNumVertices;
+        for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
+            if (mesh->HasPositions()) {
+                const aiVector3D* vp = &(mesh->mVertices[v_i]);
+                modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
+            }
+            if (mesh->HasNormals()) {
+                const aiVector3D* vn = &(mesh->mNormals[v_i]);
+                modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
+            }
+            if (mesh->HasTextureCoords(0)) {
+                const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
+                modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
+            }
+        }
+    }
+
+    aiReleaseImport(scene);
+    return modelData;
+}
+
+
 ModelData load_mesh(const char* file_name) {
     ModelData modelData;
 
@@ -180,21 +213,30 @@ ModelData load_mesh(const char* file_name) {
 
 Model load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile) {
     Model model;
-    model.data = load_mesh(file_name);
+
+    // Check file extension
+    std::string fileStr(file_name);
+    if (fileStr.substr(fileStr.find_last_of(".") + 1) == "obj") {
+        model.data = load_obj_mesh(file_name);
+    }
+    else {
+        model.data = load_mesh(file_name); // 现有的 DAE 加载
+    }
+
     model.position = position;
     model.rotationY = rotationY;
-    model.hasTexture = false; // 默认情况下没有纹理
+    model.hasTexture = false;
 
     if (textureFile != nullptr && strlen(textureFile) > 0) {
         model.textureID = loadTexture(textureFile);
         model.hasTexture = true;
     }
 
-    // Generate and bind VAO for this model
+    // 生成和绑定 VAO
     glGenVertexArrays(1, &model.vao);
     glBindVertexArray(model.vao);
 
-    // Generate VBOs for vertex positions and normals
+    // 生成 VBOs
     GLuint vp_vbo, vn_vbo;
     glGenBuffers(1, &vp_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
@@ -204,32 +246,31 @@ Model load_model(const char* file_name, vec3 position, float rotationY, const ch
     glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
     glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mNormals[0], GL_STATIC_DRAW);
 
-    // Link vertex positions
+    // 链接顶点位置
     glEnableVertexAttribArray(loc1);
     glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
     glVertexAttribPointer(loc1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    // Link vertex normals
+    // 链接顶点法线
     glEnableVertexAttribArray(loc2);
     glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
     glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
     if (!model.data.mTextureCoords.empty()) {
-    GLuint vt_vbo;
-    glGenBuffers(1, &vt_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
+        GLuint vt_vbo;
+        glGenBuffers(1, &vt_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
+        glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
+        GLint loc3 = glGetAttribLocation(shaderProgramID, "vertex_texcoord");
+        glEnableVertexAttribArray(loc3);
+        glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    }
 
-    // Link texture coordinates
-    GLint loc3 = glGetAttribLocation(shaderProgramID, "vertex_texcoord");
-    glEnableVertexAttribArray(loc3);
-    glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-}
-
-    glBindVertexArray(0); // Unbind VAO when done setting it up
+    glBindVertexArray(0); // 完成设置后解绑 VAO
 
     return model;
 }
+
 
 FishModel load_fish_model(const char* file_name, vec3 position, float rotationY) {
     FishModel fishModel;
@@ -475,7 +516,22 @@ void display() {
         int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
         printf("has color : %d \n", model.data.hasColor);
         print(model.data.diffuseColor);
-        glUniform3fv(color_location, 1, model.data.hasColor ? &model.data.diffuseColor.v[0] : nullptr);
+
+        // 检查 color_location 是否有效
+        if (color_location != -1) {
+            // 根据 hasColor 的值选择颜色
+            if (model.data.hasColor) {
+                glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
+            }
+            else {
+                // 传递一个默认颜色，例如白色
+                vec3 defaultColor(1.0f, 1.0f, 1.0f); // 白色
+                glUniform3fv(color_location, 1, &defaultColor.v[0]);
+            }
+        }
+        else {
+            std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+        }
 
         glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
     }
@@ -549,9 +605,9 @@ void init() {
     loc1 = glGetAttribLocation(shaderProgramID, "vertex_position");
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
-    models.push_back(load_model("red_cube.dae", vec3(0.0f, 0.0f, -10.0f), 30.0f, nullptr));
-    models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
-    models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));
+    models.push_back(load_model("terrain1.obj", vec3(0.0f, -5.0f, -10.0f), 30.0f, nullptr));
+    /*models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
+    models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));*/
 
     // Initialize multiple fish models
     for (int i = 0; i < 1; ++i) {
