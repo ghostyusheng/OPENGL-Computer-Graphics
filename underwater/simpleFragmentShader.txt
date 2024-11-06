@@ -7,6 +7,8 @@ out vec4 fragColor;
 
 uniform sampler2D objectTexture;
 uniform vec3 diffuseColor; // New uniform for the diffuse color
+uniform vec3 ambientLight = vec3(0.2, 0.3, 0.4); // Soft blue-green ambient light for underwater effect
+
 
 void main() {
     vec4 textureColor = texture(objectTexture, Texcoord);
@@ -14,6 +16,7 @@ void main() {
     // Use texture color if available; otherwise, use diffuseColor
     vec3 baseColor = textureColor.a > 0.0 ? textureColor.rgb : diffuseColor;
 
-    vec3 finalColor = LightIntensity * baseColor;
+    // Add ambient light to LightIntensity
+    vec3 finalColor = (LightIntensity + ambientLight) * baseColor;
     fragColor = vec4(finalColor, textureColor.a > 0.0 ? textureColor.a : 1.0);
 }
