@@ -14,7 +14,7 @@ void main() {
     vec4 textureColor = texture(objectTexture, Texcoord);
     
     // Use texture color if available; otherwise, use diffuseColor
-    vec3 baseColor = textureColor.a > 0.0 ? textureColor.rgb : diffuseColor;
+    vec3 baseColor = diffuseColor * textureColor.rgb; // Combine diffuse and texture color
 
     // Add ambient light to LightIntensity
     vec3 finalColor = (LightIntensity + ambientLight) * baseColor;

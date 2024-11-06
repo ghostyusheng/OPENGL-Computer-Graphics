@@ -172,10 +172,10 @@ ModelData load_mesh(const char* file_name) {
                 const aiVector3D* vn = &(mesh->mNormals[v_i]);
                 modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
             }
-           /* if (mesh->HasTextureCoords(0)) {
+            if (mesh->HasTextureCoords(0)) {
                 const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
                 modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
-            }*/
+            }
 
             // Load the diffuse color if no texture coordinates are available
             if (scene->mMaterials[mesh->mMaterialIndex]) {
@@ -513,6 +513,8 @@ void display() {
 
         // Check if model has a color and no texture
         int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
+        printf("has color : %d \n", model.data.hasColor);
+        print(model.data.diffuseColor);
         glUniform3fv(color_location, 1, model.data.hasColor ? &model.data.diffuseColor.v[0] : nullptr);
 
         glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
@@ -594,8 +596,8 @@ void init() {
     particleTextureID = loadTexture("diffuse.jpg");
     //textureID = loadTexture("diffuse.jpg");
 
-    models.push_back(load_model("pink_cube.dae", vec3(0.0f, 0.0f, -10.0f), 30.0f));
-    models.push_back(load_model("monkey.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f));
+    models.push_back(load_model("red_cube.dae", vec3(0.0f, 0.0f, -10.0f), 30.0f));
+    models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f));
     models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f));
 
     // Initialize multiple fish models
