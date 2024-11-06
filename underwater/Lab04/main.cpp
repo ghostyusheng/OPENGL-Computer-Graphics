@@ -76,6 +76,8 @@ typedef struct {
     std::vector<vec3> mVertices;
     std::vector<vec3> mNormals;
     std::vector<vec2> mTextureCoords;
+    vec3 diffuseColor = vec3(1.0f, 1.0f, 1.0f); // Default color (white)
+    bool hasColor = false; // Indicates if a color is defined
 } ModelData;
 
 struct Model {
@@ -170,9 +172,20 @@ ModelData load_mesh(const char* file_name) {
                 const aiVector3D* vn = &(mesh->mNormals[v_i]);
                 modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
             }
-            if (mesh->HasTextureCoords(0)) {
+           /* if (mesh->HasTextureCoords(0)) {
                 const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
                 modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
+            }*/
+
+            // Load the diffuse color if no texture coordinates are available
+            if (scene->mMaterials[mesh->mMaterialIndex]) {
+                std::cout << "material color: " << std::endl;
+                aiColor4D diffuse;
+                if (AI_SUCCESS == aiGetMaterialColor(scene->mMaterials[mesh->mMaterialIndex], AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
+                    modelData.diffuseColor = vec3(diffuse.r, diffuse.g, diffuse.b);
+                    print(vec3(diffuse.r, diffuse.g, diffuse.b));
+                    modelData.hasColor = true; // Set flag to indicate the presence of color
+                }
             }
         }
     }
@@ -498,6 +511,10 @@ void display() {
         int matrix_location = glGetUniformLocation(shaderProgramID, "model");
         glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
 
+        // Check if model has a color and no texture
+        int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
+        glUniform3fv(color_location, 1, model.data.hasColor ? &model.data.diffuseColor.v[0] : nullptr);
+
         glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
     }
 
@@ -512,10 +529,12 @@ void display() {
         render_fish(model);
     }
 
+
+
     // Set the texture as active texture unit 0
-    glActiveTexture(GL_TEXTURE0);
+    /*glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);
+    glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);*/
 
 
         // Update and render particles
@@ -573,10 +592,11 @@ void init() {
 
     // Load and bind the texture for particles
     particleTextureID = loadTexture("diffuse.jpg");
-    textureID = loadTexture("diffuse.jpg");
+    //textureID = loadTexture("diffuse.jpg");
 
     models.push_back(load_model("pink_cube.dae", vec3(0.0f, 0.0f, -10.0f), 30.0f));
     models.push_back(load_model("monkey.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f));
+    models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f));
 
     // Initialize multiple fish models
     for (int i = 0; i < 1; ++i) {
