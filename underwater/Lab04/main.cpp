@@ -40,8 +40,6 @@ static float finAngle = 0.0f; // Declare finAngle as static/global
 
 static std::default_random_engine e;
 
-GLuint textureID;
-
 float get_rand(int min, int max) {
     return e() % (max - min) + min;
 }
@@ -69,6 +67,8 @@ struct Model {
     vec3 position;
     float rotationY;
     GLuint vao; // VAO for this specific model
+    GLuint textureID;
+    bool hasTexture; // 新增的布尔值，用于指示是否有纹理
 };
 
 struct ModelPart {
@@ -97,7 +97,7 @@ int height = 600;
 
 GLuint loc1, loc2;
 
-GLuint particleTextureID;
+GLuint textureID;
 
 
 GLuint loadTexture(const char* filePath) {
@@ -178,11 +178,17 @@ ModelData load_mesh(const char* file_name) {
     return modelData;
 }
 
-Model load_model(const char* file_name, vec3 position, float rotationY) {
+Model load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile) {
     Model model;
     model.data = load_mesh(file_name);
     model.position = position;
     model.rotationY = rotationY;
+    model.hasTexture = false; // 默认情况下没有纹理
+
+    if (textureFile != nullptr && strlen(textureFile) > 0) {
+        model.textureID = loadTexture(textureFile);
+        model.hasTexture = true;
+    }
 
     // Generate and bind VAO for this model
     glGenVertexArrays(1, &model.vao);
@@ -449,6 +455,14 @@ void display() {
     for (const auto& model : models) {
         glBindVertexArray(model.vao);
 
+        if (model.hasTexture) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, model.textureID);
+            glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);
+        }
+
+        // 设置useTexture的uniform变量
+        glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), model.hasTexture);
 
         mat4 modelMatrix = identity_mat4();
         modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
@@ -535,13 +549,9 @@ void init() {
     loc1 = glGetAttribLocation(shaderProgramID, "vertex_position");
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
-    // Load and bind the texture for particles
-    particleTextureID = loadTexture("diffuse.jpg");
-    //textureID = loadTexture("diffuse.jpg");
-
-    models.push_back(load_model("red_cube.dae", vec3(0.0f, 0.0f, -10.0f), 30.0f));
-    models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f));
-    models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f));
+    models.push_back(load_model("red_cube.dae", vec3(0.0f, 0.0f, -10.0f), 30.0f, nullptr));
+    models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
+    models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));
 
     // Initialize multiple fish models
     for (int i = 0; i < 1; ++i) {
