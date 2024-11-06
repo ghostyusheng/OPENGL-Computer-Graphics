@@ -53,22 +53,6 @@ MESH TO LOAD
 /*----------------------------------------------------------------------------
 ----------------------------------------------------------------------------*/
 
-struct Particle {
-    vec3 position;
-    float speed;
-};
-
-// Initialize particles
-std::vector<Particle> particles;
-void initializeParticles() {
-    for (int i = 0; i < 100; ++i) {
-        Particle p;
-        p.position = vec3(rand() % 20 - 10, rand() % 10, rand() % 20 - 10); // 随机位置
-        p.speed = 0.1f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 0.2f)); // 随机速度
-        particles.push_back(p);
-    }
-}
-
 
 #pragma region SimpleTypes
 typedef struct {
@@ -427,44 +411,6 @@ GLuint CompileShaders() {
 }
 #pragma endregion SHADER_FUNCTIONS
 
-void updateParticles() {
-    for (auto& p : particles) {
-        p.position.v[1] += p.speed * 0.01f; // Move particle upward
-
-        // Reset position when particle goes out of bounds
-        if (p.position.v[1] > 5.0f) {
-            p.position.v[1] = -5.0f; // Reset to bottom
-            p.position.v[0] = rand() % 20 - 10; // Random x position
-            p.position.v[2] = rand() % 20 - 10; // Random z position
-        }
-    }
-}
-
-
-
-void renderParticles() {
-    glUseProgram(shaderProgramID);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, particleTextureID);
-
-    int textureLocation = glGetUniformLocation(shaderProgramID, "particleTexture");
-    glUniform1i(textureLocation, 0);
-
-    for (const auto& p : particles) {
-        mat4 particleModel = translate(identity_mat4(), p.position); // Use actual position
-
-        int model_location = glGetUniformLocation(shaderProgramID, "model");
-        glUniformMatrix4fv(model_location, 1, GL_FALSE, particleModel.m);
-
-        glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(-0.3f, -0.3f, 0);
-        glTexCoord2f(1, 0); glVertex3f(0.3f, -0.3f, 0);
-        glTexCoord2f(1, 1); glVertex3f(0.3f, 0.3f, 0);
-        glTexCoord2f(0, 1); glVertex3f(-0.3f, 0.3f, 0);
-        glEnd();
-    }
-}
-
 
 
 void display() {
@@ -541,9 +487,6 @@ void display() {
 
         // Update and render particles
 
-    updateParticles();
-    renderParticles(); // Render particles
-
     glutSwapBuffers();
 }
 
@@ -608,8 +551,6 @@ void init() {
         fishModels.push_back(fish);
     }
 
-    // Initialize particles
-    initializeParticles(); // Call to initialize particles
 }
 
 
