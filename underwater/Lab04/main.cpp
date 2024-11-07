@@ -775,8 +775,25 @@ void init() {
             "assets/shark3.dae",
             vec3(0.0f, 0.0f, -3.0f),
             45.0f,
-            "assets/shark.jpg")
+            nullptr)
     );
+
+    models.push_back(
+        load_model(
+            "assets/seahorse.dae",
+            vec3(0.0f, 0.0f, -30.0f),
+            45.0f,
+            nullptr)
+    );
+
+    models.push_back(
+        load_model(
+            "assets/squid.dae",
+            vec3(0.0f, -3.0f, -10.0f),
+            45.0f,
+            nullptr)
+    );
+
 
 
     /*models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
