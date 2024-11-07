@@ -38,6 +38,12 @@ float traceSpeed = 0.5f;   // Speed of the fish movement
 float angle = 0.0f;        // Angle along the path
 static float finAngle = 0.0f; // Declare finAngle as static/global
 
+float squidSpeed = 0.2f; // 鱿鱼移动速度
+float sharkSpeed = 0.5f; // 鲨鱼移动速度
+float seahorseDirection = 1.0f; // 鱿鱼方向（1:向上，-1:向下）
+float sharkDirectionX = 1.0f; // 鲨鱼水平移动方向
+float squidDirectionX = 1.1f; // 鲨鱼水平移动方向
+
 static std::default_random_engine e;
 
 float get_rand(int min, int max) {
@@ -738,6 +744,32 @@ void updateScene() {
 
         // Update fin angle for animation
         fish.finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
+    }
+
+    // 更新鱿鱼的Y坐标
+    for (auto& fish : models) {
+        if (fish.name == "assets/seahorse.dae") { // 假设鱿鱼模型名称为" squid"
+            fish.position.v[1] += squidSpeed * seahorseDirection * delta; // 上下移动
+            if (fish.position.v[1] >= 5.0f || fish.position.v[1] <= -3.0f) { // 设定上下边界
+                seahorseDirection *= -1; // 反转方向
+            }
+            // 添加抖动效果
+            fish.position.v[0] += (rand() % 10 - 5) * 0.03f; // 小范围抖动
+        }
+
+        // 更新鲨鱼的X坐标
+        if (fish.name == "assets/shark3.dae") { // 假设鲨鱼模型名称为"shark"
+            fish.position.v[0] += sharkSpeed * sharkDirectionX * delta; // 水平移动
+            if (fish.position.v[0] >= 15.0f || fish.position.v[0] <= -25.0f) { // 设定水平边界
+                sharkDirectionX *= -1; // 反转方向
+            }
+        }
+        if (fish.name == "assets/squid.dae") { // 假设鲨鱼模型名称为"shark"
+            fish.position.v[0] += squidSpeed * squidDirectionX * delta; // 水平移动
+            if (fish.position.v[0] >= 15.0f || fish.position.v[0] <= -25.0f) { // 设定水平边界
+                squidDirectionX *= -1; // 反转方向
+            }
+        }
     }
 
     glutPostRedisplay(); // Request a redraw to update the display
