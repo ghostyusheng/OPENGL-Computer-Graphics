@@ -44,6 +44,14 @@ float seahorseDirection = 1.0f; // 鱿鱼方向（1:向上，-1:向下）
 float sharkDirectionX = 1.0f; // 鲨鱼水平移动方向
 float squidDirectionX = 1.1f; // 鲨鱼水平移动方向
 
+// 聚光灯属性
+bool spotlightEnabled = false; // 聚光灯启用状态
+vec3 spotlightPosition; // 聚光灯位置
+vec3 spotlightDirection; // 聚光灯方向
+float spotlightCutoff = 30.0f; // 聚光灯的切割角度
+float spotlightExponent = 2.0f; // 聚光灯的衰减指数
+
+
 static std::default_random_engine e;
 
 float get_rand(int min, int max) {
@@ -487,7 +495,7 @@ void render_fish(const FishModel& fishModel) {
 
     // 检查 color_location 是否有效
     if (color_location != -1) {
-        print(fishModel.color);
+        //print(fishModel.color);
         glUniform3fv(color_location, 1, &fishModel.color.v[0]);
     }
     else {
@@ -676,7 +684,7 @@ void display() {
             std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
         }
 
-        std::cout << "name: " + model.name << std::endl;
+        //std::cout << "name: " + model.name << std::endl;
         if ("terrain1.obj" == model.name || "assets/qst.obj" == model.name) {
             glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
         }
@@ -725,6 +733,21 @@ void updateScene() {
         last_time = curr_time;
     float delta = (curr_time - last_time) * 0.001f;
     last_time = curr_time;
+
+    vec3 submarinePosition(0,-20.0f,-3.0f);
+
+    // 更新相机和潜艇的距离
+    float distanceToSubmarine = length(cameraPosition - submarinePosition); // submarinePosition是潜艇的位置
+
+    // 当相机靠近潜艇时，启用聚光灯
+    if (distanceToSubmarine < 10.0f) { // 设置距离阈值
+        spotlightEnabled = true;
+        spotlightPosition = submarinePosition; // 聚光灯位置设置为潜艇位置
+        spotlightDirection = vec3(0.0f, 0.0f, -1.0f); // 假设潜艇前方是Z轴负方向
+    }
+    else {
+        spotlightEnabled = false; // 关闭聚光灯
+    }
 
 
     // Update each fish model
