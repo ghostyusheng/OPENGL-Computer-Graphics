@@ -358,6 +358,8 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY,
 
     // Generate a random color
     fishModel.color = vec3(get_rand(0, 255) / 255.0f, get_rand(0, 255) / 255.0f, get_rand(0, 255) / 255.0f);
+    // Debug output to check color
+    std::cout << "Fish Color: (" << fishModel.color.v[0] << ", " << fishModel.color.v[1] << ", " << fishModel.color.v[2] << ")\n";
 
     fishModel.hasTexture = false;
 
@@ -469,25 +471,41 @@ void render_fish(const FishModel& fishModel) {
     glDrawArrays(GL_TRIANGLES, 0, fishModel.body.data.mPointCount);
 
     // Set up fin transformation (hierarchical: start with body’s transform)
-    printf("render_fish fin angle: %f \n", fishModel.finAngle);
+    //printf("render_fish fin angle: %f \n", fishModel.finAngle);
 
     mat4 finModel = bodyModel;
     finModel = rotate_z_deg(finModel, fishModel.finAngle);  // Apply oscillation to fin
     glUniformMatrix4fv(model_location, 1, GL_FALSE, finModel.m);
 
     glBindVertexArray(fishModel.fin.vao);
+
+    // Check if model has a color and no texture
+    int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
+    glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), 0);
+    //printf("has color : %d \n", model.data.hasColor);
+    //print(model.data.diffuseColor);
+
+    // 检查 color_location 是否有效
+    if (color_location != -1) {
+        print(fishModel.color);
+        glUniform3fv(color_location, 1, &fishModel.color.v[0]);
+    }
+    else {
+        std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+    }
+
     glDrawArrays(GL_TRIANGLES, 0, fishModel.fin.data.mPointCount);
 
-    printf("fish has texture: %d", fishModel.hasTexture);
+    //printf("fish has texture: %d", fishModel.hasTexture);
 
-    if (fishModel.hasTexture) {
+   /* if (fishModel.hasTexture) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, fishModel.textureID);
         glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);
-    }
+    }*/
 
     // 设置useTexture的uniform变量
-    glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), fishModel.hasTexture);
+    //glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), fishModel.hasTexture);
 }
 
 #pragma endregion MESH LOADING
@@ -725,7 +743,7 @@ void init() {
     // Initialize multiple fish models
     for (int i = 0; i < 5; ++i) {
         FishModel fish;
-        fish = load_fish_model("assets/xxx.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f, "fish.png");
+        fish = load_fish_model("assets/xxx.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f, "assets/fish.png");
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
         fishModels.push_back(fish);
     }
