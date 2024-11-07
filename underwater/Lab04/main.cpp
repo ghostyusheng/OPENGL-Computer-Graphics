@@ -393,6 +393,7 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
             part = &fishModel.body;
         }
         else if (m_i == 1) { // Assuming the second mesh is the fin
+            printf("---> Fin part found! \n");
             part = &fishModel.fin;
         }
 
@@ -593,25 +594,25 @@ void display() {
         glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
 
         // Check if model has a color and no texture
-        int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
-        printf("has color : %d \n", model.data.hasColor);
-        print(model.data.diffuseColor);
+        //int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
+        //printf("has color : %d \n", model.data.hasColor);
+        //print(model.data.diffuseColor);
 
-        // 检查 color_location 是否有效
-        if (color_location != -1) {
-            // 根据 hasColor 的值选择颜色
-            if (model.data.hasColor) {
-                glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
-            }
-            else {
-                // 传递一个默认颜色，例如白色
-                vec3 defaultColor(1.0f, 1.0f, 1.0f); // 白色
-                glUniform3fv(color_location, 1, &defaultColor.v[0]);
-            }
-        }
-        else {
-            std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
-        }
+        //// 检查 color_location 是否有效
+        //if (color_location != -1) {
+        //    // 根据 hasColor 的值选择颜色
+        //    if (model.data.hasColor) {
+        //        glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
+        //    }
+        //    else {
+        //        // 传递一个默认颜色，例如白色
+        //        vec3 defaultColor(1.0f, 1.0f, 1.0f); // 白色
+        //        glUniform3fv(color_location, 1, &defaultColor.v[0]);
+        //    }
+        //}
+        //else {
+        //    std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+        //}
 
         glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
     }
@@ -699,7 +700,7 @@ void init() {
     // Initialize multiple fish models
     for (int i = 0; i < 5; ++i) {
         FishModel fish;
-        fish = load_fish_model("simple_fish6.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f);
+        fish = load_fish_model("assets/fish1.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f);
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
         fishModels.push_back(fish);
     }
