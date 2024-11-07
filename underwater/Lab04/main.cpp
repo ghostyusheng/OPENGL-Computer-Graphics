@@ -83,6 +83,8 @@ struct FishModel {
     float rotationY;
     vec3 direction; // New attribute for swimming direction
     float finAngle;
+    bool hasTexture;
+    GLuint textureID;
 };
 
 std::vector<Model> models; // Vector to hold multiple models
@@ -348,10 +350,17 @@ Model load_model(const char* file_name, vec3 position, float rotationY, const ch
 }
 
 
-FishModel load_fish_model(const char* file_name, vec3 position, float rotationY) {
+FishModel load_fish_model(const char* file_name, vec3 position, float rotationY, const char* textureFile) {
     FishModel fishModel;
     fishModel.position = position;
     fishModel.rotationY = rotationY;
+
+    fishModel.hasTexture = false;
+
+    if (textureFile != nullptr && strlen(textureFile) > 0) {
+        fishModel.textureID = loadTexture(textureFile);
+        fishModel.hasTexture = true;
+    }
 
     const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
     if (!scene) {
@@ -363,6 +372,7 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
     }
 
     std::cout << "Mesh count: " << scene->mNumMeshes << std::endl;
+    printf("-> loaded fish texture? %d \n", fishModel.hasTexture);
 
     // Iterate through each mesh in the scene
     for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
@@ -407,7 +417,7 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
             glGenVertexArrays(1, &part->vao);
             glBindVertexArray(part->vao);
 
-            GLuint vp_vbo, vn_vbo;
+            GLuint vp_vbo, vn_vbo, vt_vbo;
             glGenBuffers(1, &vp_vbo);
             glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
             glBufferData(GL_ARRAY_BUFFER, part->data.mPointCount * sizeof(vec3), &part->data.mVertices[0], GL_STATIC_DRAW);
@@ -425,6 +435,23 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
             glEnableVertexAttribArray(loc2);
             glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
             glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+            if (fishModel.hasTexture) {
+                printf("-----> draw fish texture  \n");
+                std::cout << "Texture Coordinates Count: " << modelData.mTextureCoords.size() << std::endl;
+
+
+               /*glGenBuffers(1, &vt_vbo);
+                glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
+                glBufferData(GL_ARRAY_BUFFER, 
+                    fishModel.body.data.mPointCount * sizeof(vec2),
+                    &fishModel.body.data.mTextureCoords[0],
+                    GL_STATIC_DRAW);
+                GLint loc3 = glGetAttribLocation(shaderProgramID, "vertex_texcoord");
+                glEnableVertexAttribArray(loc3);
+                glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);*/
+            }
+
 
             glBindVertexArray(0); // Unbind VAO when done
         }
@@ -461,6 +488,17 @@ void render_fish(const FishModel& fishModel) {
 
     glBindVertexArray(fishModel.fin.vao);
     glDrawArrays(GL_TRIANGLES, 0, fishModel.fin.data.mPointCount);
+
+    printf("fish has texture: %d", fishModel.hasTexture);
+
+    if (fishModel.hasTexture) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, fishModel.textureID);
+        glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);
+    }
+
+    // 设置useTexture的uniform变量
+    glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), fishModel.hasTexture);
 }
 
 #pragma endregion MESH LOADING
@@ -594,25 +632,25 @@ void display() {
         glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
 
         // Check if model has a color and no texture
-        //int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
+        int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
         //printf("has color : %d \n", model.data.hasColor);
         //print(model.data.diffuseColor);
 
-        //// 检查 color_location 是否有效
-        //if (color_location != -1) {
-        //    // 根据 hasColor 的值选择颜色
-        //    if (model.data.hasColor) {
-        //        glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
-        //    }
-        //    else {
-        //        // 传递一个默认颜色，例如白色
-        //        vec3 defaultColor(1.0f, 1.0f, 1.0f); // 白色
-        //        glUniform3fv(color_location, 1, &defaultColor.v[0]);
-        //    }
-        //}
-        //else {
-        //    std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
-        //}
+        // 检查 color_location 是否有效
+        if (color_location != -1) {
+            // 根据 hasColor 的值选择颜色
+            if (model.data.hasColor) {
+                glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
+            }
+            else {
+                // 传递一个默认颜色，例如白色
+                vec3 defaultColor(1.0f, 1.0f, 1.0f); // 白色
+                glUniform3fv(color_location, 1, &defaultColor.v[0]);
+            }
+        }
+        else {
+            std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+        }
 
         glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
     }
@@ -700,7 +738,7 @@ void init() {
     // Initialize multiple fish models
     for (int i = 0; i < 5; ++i) {
         FishModel fish;
-        fish = load_fish_model("assets/xxx.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f);
+        fish = load_fish_model("assets/xxx.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f, "fish.png");
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
         fishModels.push_back(fish);
     }
