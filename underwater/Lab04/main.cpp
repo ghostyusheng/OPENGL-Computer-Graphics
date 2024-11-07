@@ -713,7 +713,7 @@ void updateScene() {
 
         // Check if the fish has reached a certain distance to reverse direction
         if (fish.position.v[0] >= traceRadius || fish.position.v[0] <= -traceRadius) {
-            fish.direction.v[0] = -(fish.direction.v[0] + 1.0f); // Reverse direction
+            fish.direction.v[0] = -fish.direction.v[0]; // Reverse direction
         }
         if (fish.position.v[2] >= traceRadius || fish.position.v[2] <= -traceRadius) {
             fish.direction.v[2] = -fish.direction.v[2]; // Reverse direction
@@ -744,7 +744,7 @@ void init() {
     //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 15; ++i) {
         FishModel fish;
         fish = load_fish_model("assets/xxx.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f, "assets/fish.png");
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
