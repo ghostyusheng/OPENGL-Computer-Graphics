@@ -699,7 +699,7 @@ void init() {
     // Initialize multiple fish models
     for (int i = 0; i < 5; ++i) {
         FishModel fish;
-        fish = load_fish_model("simple_fish.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f);
+        fish = load_fish_model("simple_fish6.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f);
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
         fishModels.push_back(fish);
     }
