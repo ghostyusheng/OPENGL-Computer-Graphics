@@ -160,6 +160,8 @@ ModelData load_obj_mesh(const char* file_name) {
                 const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
                 modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
             }
+
+
         }
     }
 
@@ -605,7 +607,7 @@ void init() {
     loc1 = glGetAttribLocation(shaderProgramID, "vertex_position");
     loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 
-    models.push_back(load_model("terrain1.obj", vec3(0.0f, -5.0f, -10.0f), 30.0f, nullptr));
+    models.push_back(load_model("terrain2.obj", vec3(0.0f, -5.0f, -10.0f), 30.0f, "diffuse.jpg"));
     /*models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
     models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));*/
 
