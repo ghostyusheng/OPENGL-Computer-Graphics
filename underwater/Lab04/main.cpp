@@ -436,23 +436,6 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY,
             glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
             glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-            if (fishModel.hasTexture) {
-                printf("-----> draw fish texture  \n");
-                std::cout << "Texture Coordinates Count: " << modelData.mTextureCoords.size() << std::endl;
-
-
-               /*glGenBuffers(1, &vt_vbo);
-                glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-                glBufferData(GL_ARRAY_BUFFER, 
-                    fishModel.body.data.mPointCount * sizeof(vec2),
-                    &fishModel.body.data.mTextureCoords[0],
-                    GL_STATIC_DRAW);
-                GLint loc3 = glGetAttribLocation(shaderProgramID, "vertex_texcoord");
-                glEnableVertexAttribArray(loc3);
-                glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);*/
-            }
-
-
             glBindVertexArray(0); // Unbind VAO when done
         }
     }
@@ -730,10 +713,10 @@ void init() {
     // 加载高度图模型
     //terrain = load_heightmap_model("heightmap.png", vec3(0.0f, -2.0f, -10.0f), 0.0f, 1.0f);
 
-    //models.push_back(load_model("terrain1.obj", vec3(0.0f, -5.0f, -10.0f), 30.0f, "diffuse.jpg"));
+    models.push_back(load_model("terrain1.obj", vec3(0.0f, -12.0f, -10.0f), 30.0f, "assets/stone2.jpg"));
     /*models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
     models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));*/
-    models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
+    //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
     for (int i = 0; i < 5; ++i) {
