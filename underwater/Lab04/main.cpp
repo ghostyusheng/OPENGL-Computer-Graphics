@@ -255,6 +255,9 @@ ModelData load_mesh(const char* file_name) {
         fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
         return modelData;
     }
+    else {
+        printf("=> loaded: %s \n ", file_name);
+    }
 
     for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
         const aiMesh* mesh = scene->mMeshes[m_i];
@@ -285,6 +288,8 @@ ModelData load_mesh(const char* file_name) {
             }
         }
     }
+
+    printf("=> count : %d \n", modelData.mPointCount);
 
     aiReleaseImport(scene);
     return modelData;
@@ -738,13 +743,28 @@ void init() {
     // 加载高度图模型
     //terrain = load_heightmap_model("heightmap.png", vec3(0.0f, -2.0f, -10.0f), 0.0f, 1.0f);
 
-    models.push_back(load_model("terrain1.obj", vec3(0.0f, -12.0f, -10.0f), 30.0f, "assets/stone2.jpg"));
+    models.push_back(
+        load_model(
+        "terrain1.obj",
+        vec3(0.0f, -12.0f, -10.0f),
+        30.0f,
+        "assets/stone2.jpg")
+    );
+    models.push_back(
+        load_model(
+            "assets/qst.obj",
+            vec3(0.0f, -20.0f, -3.0f),
+            45.0f,
+            "assets/qst.png")
+    );
+
+
     /*models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
     models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));*/
     //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 15; ++i) {
+    for (int i = 0; i < 2; ++i) {
         FishModel fish;
         fish = load_fish_model("assets/xxx.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f, "assets/fish.png");
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
