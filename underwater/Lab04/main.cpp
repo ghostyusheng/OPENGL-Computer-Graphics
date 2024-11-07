@@ -11,8 +11,6 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include <GL/gl.h>
-#include <GL/glu.h>
 
 // Assimp includes
 #include <assimp/cimport.h> // scene importer
@@ -737,39 +735,13 @@ void updateScene() {
     float delta = (curr_time - last_time) * 0.001f;
     last_time = curr_time;
 
-    vec3 submarinePosition(0,-20.0f,-3.0f);
+    // 更新光源位置
+    GLfloat light_position[] = { 0.0f, 0.0f, -10.0f, 1.0f };
+    glLightfv(GL_LIGHT2, GL_POSITION, light_position);
 
-    // 更新相机和潜艇的距离
-    float distanceToSubmarine = length(cameraPosition - submarinePosition); // submarinePosition是潜艇的位置
-
-    printf("light distance: %f \n ", distanceToSubmarine);
-    //print(submarinePosition);
-
-    // 当相机靠近潜艇时，启用聚光灯
-    if (26.0f < distanceToSubmarine && distanceToSubmarine < 27.0f) { // 设置距离阈值
-        printf(" -> spot light working \n");
-        spotlightEnabled = true;
-        spotlightPosition = cameraPosition; // 聚光灯位置设置为潜艇位置
-        spotlightDirection = vec3(0.0f, 0.0f, -1.0f); // 假设潜艇前方是Z轴负方向
-    }
-    else {
-        //spotlightEnabled = false; // 关闭聚光灯
-    }
-
-    if (spotlightEnabled) {
-        //printf("Spotlight is enabled at position: (%f, %f, %f)\n", spotlightPosition.v[0], spotlightPosition.v[1], spotlightPosition.v[2]);
-        // 计算潜艇和相机的位置
-        // 这里假设你有相机和潜艇的位置变量
-            // 更新聚光灯位置和方向
-        GLfloat light_position[] = { spotlightPosition.v[0], spotlightPosition.v[1], spotlightPosition.v[2], 1.0f };
-        GLfloat spot_direction[] = { spotlightDirection.v[0], spotlightDirection.v[1], spotlightDirection.v[2] };
-
-        glLightfv(GL_LIGHT2, GL_POSITION, light_position);
-        glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spot_direction);
-    }
-    else {
-        //printf("Spotlight is disabled\n");
-    }
+    // 更新光源方向
+    GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f }; // 向下照射
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spot_direction);
 
 
     // Update each fish model
@@ -828,18 +800,26 @@ void init() {
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT2); // 启用聚光灯
 
-    // 定义聚光灯属性
+    // 设置探照灯的属性
     GLfloat diffuseLight[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色光
     GLfloat specularLight[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色光
 
-    // 设置聚光灯属性
+    // 光源位置更改为 (0.0f, 0.0f, -10.0f)
+    GLfloat light_position[] = { 0.0f, 0.0f, -10.0f, 1.0f }; // 设定在该位置
+    glLightfv(GL_LIGHT2, GL_POSITION, light_position);
+
+    // 设置探照灯的方向
+    GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f };
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spot_direction);
+
+    // 设置探照灯的其他属性
     glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight);
     glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight);
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 25.0f); // 切割角度
+    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 2.0f); // 聚光灯强度
     glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f); // 常数衰减
     glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0f); // 线性衰减
     glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0f); // 二次衰减
-    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 45.0f); // 切割角度
-    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 2.0f); // 聚光灯的强度
 
     GLuint shaderProgramID = CompileShaders();
 
@@ -863,6 +843,30 @@ void init() {
             45.0f,
             "assets/qst.png")
     );
+
+   models.push_back(
+        load_model(
+            "green_cube.dae",
+            vec3(0.0f, 3.0f, -10.0f),
+            45.0f,
+            nullptr)
+    );
+    /*
+    models.push_back(
+        load_model(
+            "green_cube.dae",
+            vec3(0.0f, 0.0f, -5.0f),
+            45.0f,
+            nullptr)
+    );
+
+    models.push_back(
+        load_model(
+            "red_cube.dae",
+            vec3(3.0f, 3.0f, -10.0f),
+            45.0f,
+            nullptr)
+    );*/
 
     models.push_back(
         load_model(
