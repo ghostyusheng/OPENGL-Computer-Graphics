@@ -752,12 +752,13 @@ void updateScene() {
     // 更新鱿鱼的Y坐标
     for (auto& fish : models) {
         if (fish.name == "assets/seahorse.dae") { // 假设鱿鱼模型名称为" squid"
-            fish.position.v[1] += squidSpeed * seahorseDirection * delta; // 上下移动
-            if (fish.position.v[1] >= 15.0f || fish.position.v[1] <= -3.0f) { // 设定上下边界
+            //fish.position.v[1] += squidSpeed * seahorseDirection * delta; // 上下移动
+            if (fish.position.v[1] >= -3.0f || fish.position.v[1] <= 3.0f) { // 设定上下边界
+                fish.position.v[1] = 1.0f;
                 seahorseDirection *= -1; // 反转方向
             }
             // 添加抖动效果
-            fish.position.v[0] += (rand() % 10 - 5) * 0.03f; // 小范围抖动
+            fish.position.v[1] += (rand() % 10 - 5) * 0.03f * seahorseDirection; // 小范围抖动
         }
 
         // 更新鲨鱼的X坐标
@@ -805,13 +806,13 @@ void init() {
             "assets/qst.png")
     );
 
-  /* models.push_back(
+  models.push_back(
         load_model(
-            "green_cube.dae",
-            vec3(0.0f, 3.0f, -10.0f),
+            "assets/weed.dae",
+            vec3(-10.0f, -12.0f, -15.0f),
             45.0f,
             nullptr)
-    );*/
+    );
     /*
     models.push_back(
         load_model(
@@ -860,7 +861,7 @@ void init() {
     //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 5; ++i) {
         FishModel fish;
         fish = load_fish_model("assets/xxx.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f, "assets/fish.png");
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
