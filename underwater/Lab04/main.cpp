@@ -464,6 +464,21 @@ void render_fish(const FishModel& fishModel) {
     bodyModel = translate(bodyModel, fishModel.position);
     bodyModel = rotate_y_deg(bodyModel, fishModel.rotationY);
 
+    // Check if model has a color and no texture
+    int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
+    glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), 0);
+    //printf("has color : %d \n", model.data.hasColor);
+    //print(model.data.diffuseColor);
+
+    // 检查 color_location 是否有效
+    if (color_location != -1) {
+        print(fishModel.color);
+        glUniform3fv(color_location, 1, &fishModel.color.v[0]);
+    }
+    else {
+        std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+    }
+
     int model_location = glGetUniformLocation(shaderProgramID, "model");
     glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
 
@@ -479,20 +494,7 @@ void render_fish(const FishModel& fishModel) {
 
     glBindVertexArray(fishModel.fin.vao);
 
-    // Check if model has a color and no texture
-    int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
-    glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), 0);
-    //printf("has color : %d \n", model.data.hasColor);
-    //print(model.data.diffuseColor);
 
-    // 检查 color_location 是否有效
-    if (color_location != -1) {
-        print(fishModel.color);
-        glUniform3fv(color_location, 1, &fishModel.color.v[0]);
-    }
-    else {
-        std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
-    }
 
     glDrawArrays(GL_TRIANGLES, 0, fishModel.fin.data.mPointCount);
 
@@ -701,16 +703,17 @@ void updateScene() {
     float delta = (curr_time - last_time) * 0.001f;
     last_time = curr_time;
 
+
     // Update each fish model
     for (auto& fish : fishModels) {
         // Update fish position based on its direction (horizontal movement only)
         fish.position.v[0] += fish.direction.v[0] * traceSpeed * delta; // x
-        fish.position.v[1] = 0.0f; // Keep y position constant for horizontal movement
+        fish.position.v[1] = fish.direction.v[1]; // Keep y position constant for horizontal movement
         fish.position.v[2] += fish.direction.v[2] * traceSpeed * delta; // z
 
         // Check if the fish has reached a certain distance to reverse direction
         if (fish.position.v[0] >= traceRadius || fish.position.v[0] <= -traceRadius) {
-            fish.direction.v[0] = -fish.direction.v[0]; // Reverse direction
+            fish.direction.v[0] = -(fish.direction.v[0] + 1.0f); // Reverse direction
         }
         if (fish.position.v[2] >= traceRadius || fish.position.v[2] <= -traceRadius) {
             fish.direction.v[2] = -fish.direction.v[2]; // Reverse direction
