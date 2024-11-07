@@ -85,6 +85,7 @@ struct FishModel {
     float finAngle;
     bool hasTexture;
     GLuint textureID;
+    vec3 color; // Add color attribute
 };
 
 std::vector<Model> models; // Vector to hold multiple models
@@ -355,6 +356,9 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY,
     fishModel.position = position;
     fishModel.rotationY = rotationY;
 
+    // Generate a random color
+    fishModel.color = vec3(get_rand(0, 255) / 255.0f, get_rand(0, 255) / 255.0f, get_rand(0, 255) / 255.0f);
+
     fishModel.hasTexture = false;
 
     if (textureFile != nullptr && strlen(textureFile) > 0) {
@@ -449,7 +453,9 @@ void render_fish(const FishModel& fishModel) {
     /*std::cout << "fishModel: " << std::endl;
     print(fishPosition);
     std::cout << "body vao: " << std::endl;*/
-    
+
+    // Set color uniform
+    glUniform3fv(glGetUniformLocation(shaderProgramID, "fishColor"), 1, &fishModel.color.v[0]);
 
     // Set up body transformation
     mat4 bodyModel = identity_mat4();
@@ -679,9 +685,9 @@ void updateScene() {
 
     // Update each fish model
     for (auto& fish : fishModels) {
-        // Update fish position based on its direction
+        // Update fish position based on its direction (horizontal movement only)
         fish.position.v[0] += fish.direction.v[0] * traceSpeed * delta; // x
-        fish.position.v[1] += fish.direction.v[1] * traceSpeed * delta; // y
+        fish.position.v[1] = 0.0f; // Keep y position constant for horizontal movement
         fish.position.v[2] += fish.direction.v[2] * traceSpeed * delta; // z
 
         // Check if the fish has reached a certain distance to reverse direction
@@ -694,13 +700,11 @@ void updateScene() {
 
         // Update fin angle for animation
         fish.finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
-
-        printf("finAngle: %f \n", fish.finAngle);
     }
 
-    /*updateParticles();*/
     glutPostRedisplay(); // Request a redraw to update the display
 }
+
 
 
 
