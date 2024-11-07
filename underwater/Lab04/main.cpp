@@ -671,7 +671,7 @@ void display() {
         }
 
         std::cout << "name: " + model.name << std::endl;
-        if ("terrain1.obj" == model.name) {
+        if ("terrain1.obj" == model.name || "assets/qst.obj" == model.name) {
             glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
         }
         else {
@@ -775,7 +775,7 @@ void init() {
             "assets/shark3.dae",
             vec3(0.0f, 0.0f, -3.0f),
             45.0f,
-            nullptr)
+            "assets/shark.jpg")
     );
 
 
