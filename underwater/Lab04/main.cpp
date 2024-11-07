@@ -272,11 +272,11 @@ ModelData load_mesh(const char* file_name) {
 
             // Load the diffuse color if no texture coordinates are available
             if (scene->mMaterials[mesh->mMaterialIndex]) {
-                std::cout << "material color: " << std::endl;
+                //std::cout << "material color: " << std::endl;
                 aiColor4D diffuse;
                 if (AI_SUCCESS == aiGetMaterialColor(scene->mMaterials[mesh->mMaterialIndex], AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
                     modelData.diffuseColor = vec3(diffuse.r, diffuse.g, diffuse.b);
-                    print(vec3(diffuse.r, diffuse.g, diffuse.b));
+                    //print(vec3(diffuse.r, diffuse.g, diffuse.b));
                     modelData.hasColor = true; // Set flag to indicate the presence of color
                 }
             }
@@ -357,6 +357,9 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY)
     if (!scene) {
         fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
         return fishModel;
+    }
+    else {
+        fprintf(stderr, "Success: reading mesh %s\n", file_name);
     }
 
     std::cout << "Mesh count: " << scene->mNumMeshes << std::endl;
@@ -449,9 +452,10 @@ void render_fish(const FishModel& fishModel) {
     glDrawArrays(GL_TRIANGLES, 0, fishModel.body.data.mPointCount);
 
     // Set up fin transformation (hierarchical: start with body’s transform)
+    printf("render_fish fin angle: %f \n", fishModel.finAngle);
+
     mat4 finModel = bodyModel;
     finModel = rotate_z_deg(finModel, fishModel.finAngle);  // Apply oscillation to fin
-
     glUniformMatrix4fv(model_location, 1, GL_FALSE, finModel.m);
 
     glBindVertexArray(fishModel.fin.vao);
@@ -668,6 +672,8 @@ void updateScene() {
 
         // Update fin angle for animation
         fish.finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
+
+        printf("finAngle: %f \n", fish.finAngle);
     }
 
     /*updateParticles();*/
@@ -685,14 +691,15 @@ void init() {
     // 加载高度图模型
     //terrain = load_heightmap_model("heightmap.png", vec3(0.0f, -2.0f, -10.0f), 0.0f, 1.0f);
 
-    models.push_back(load_model("terrain2.obj", vec3(0.0f, -5.0f, -10.0f), 30.0f, "diffuse.jpg"));
+    //models.push_back(load_model("terrain1.obj", vec3(0.0f, -5.0f, -10.0f), 30.0f, "diffuse.jpg"));
     /*models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
     models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));*/
+    models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 5; ++i) {
         FishModel fish;
-        fish = load_fish_model("simple_fish6.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f);
+        fish = load_fish_model("simple_fish.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f);
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
         fishModels.push_back(fish);
     }
