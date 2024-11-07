@@ -63,6 +63,7 @@ typedef struct {
 } ModelData;
 
 struct Model {
+    std::string name;
     ModelData data;
     vec3 position;
     float rotationY;
@@ -297,6 +298,9 @@ ModelData load_mesh(const char* file_name) {
 
 Model load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile) {
     Model model;
+    std::string str;
+    str = file_name;
+    model.name = str;
 
     // Check file extension
     std::string fileStr(file_name);
@@ -666,7 +670,15 @@ void display() {
             std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
         }
 
-        glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
+        std::cout << "name: " + model.name << std::endl;
+        if ("terrain1.obj" == model.name) {
+            glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
+        }
+        else {
+            glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
+        }
+
+        
     }
 
     //glDrawArrays(GL_QUADS, 0, terrain.data.mPointCount);
@@ -756,6 +768,14 @@ void init() {
             vec3(0.0f, -20.0f, -3.0f),
             45.0f,
             "assets/qst.png")
+    );
+
+    models.push_back(
+        load_model(
+            "assets/shark3.dae",
+            vec3(0.0f, 0.0f, -3.0f),
+            45.0f,
+            nullptr)
     );
 
 
