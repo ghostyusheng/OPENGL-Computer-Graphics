@@ -39,18 +39,12 @@ float traceSpeed = 0.5f;   // Speed of the fish movement
 float angle = 0.0f;        // Angle along the path
 static float finAngle = 0.0f; // Declare finAngle as static/global
 
-float squidSpeed = 0.4f; // 鱿鱼移动速度
+float squidSpeed = 0.5f; // 鱿鱼移动速度
 float sharkSpeed = 0.8f; // 鲨鱼移动速度
 float seahorseDirection = 1.0f; // 鱿鱼方向（1:向上，-1:向下）
 float sharkDirectionX = 1.0f; // 鲨鱼水平移动方向
 float squidDirectionX = 1.1f; // 鲨鱼水平移动方向
 
-// 聚光灯属性
-bool spotlightEnabled = false; // 聚光灯启用状态
-vec3 spotlightPosition; // 聚光灯位置
-vec3 spotlightDirection; // 聚光灯方向
-float spotlightCutoff = 30.0f; // 聚光灯的切割角度
-float spotlightExponent = 2.0f; // 聚光灯的衰减指数
 
 
 static std::default_random_engine e;
@@ -735,14 +729,6 @@ void updateScene() {
     float delta = (curr_time - last_time) * 0.001f;
     last_time = curr_time;
 
-    // 更新光源位置
-    GLfloat light_position[] = { 0.0f, 0.0f, -10.0f, 1.0f };
-    glLightfv(GL_LIGHT2, GL_POSITION, light_position);
-
-    // 更新光源方向
-    GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f }; // 向下照射
-    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spot_direction);
-
 
     // Update each fish model
     for (auto& fish : fishModels) {
@@ -767,7 +753,7 @@ void updateScene() {
     for (auto& fish : models) {
         if (fish.name == "assets/seahorse.dae") { // 假设鱿鱼模型名称为" squid"
             fish.position.v[1] += squidSpeed * seahorseDirection * delta; // 上下移动
-            if (fish.position.v[1] >= 5.0f || fish.position.v[1] <= -3.0f) { // 设定上下边界
+            if (fish.position.v[1] >= 15.0f || fish.position.v[1] <= -3.0f) { // 设定上下边界
                 seahorseDirection *= -1; // 反转方向
             }
             // 添加抖动效果
@@ -796,31 +782,6 @@ void updateScene() {
 
 
 void init() {
-    // 启用光照
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT2); // 启用聚光灯
-
-    // 设置探照灯的属性
-    GLfloat diffuseLight[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色光
-    GLfloat specularLight[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白色光
-
-    // 光源位置更改为 (0.0f, 0.0f, -10.0f)
-    GLfloat light_position[] = { 0.0f, 0.0f, -10.0f, 1.0f }; // 设定在该位置
-    glLightfv(GL_LIGHT2, GL_POSITION, light_position);
-
-    // 设置探照灯的方向
-    GLfloat spot_direction[] = { 0.0f, -1.0f, 0.0f };
-    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spot_direction);
-
-    // 设置探照灯的其他属性
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight);
-    glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight);
-    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 25.0f); // 切割角度
-    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 2.0f); // 聚光灯强度
-    glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f); // 常数衰减
-    glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.0f); // 线性衰减
-    glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0f); // 二次衰减
-
     GLuint shaderProgramID = CompileShaders();
 
     loc1 = glGetAttribLocation(shaderProgramID, "vertex_position");
@@ -844,13 +805,13 @@ void init() {
             "assets/qst.png")
     );
 
-   models.push_back(
+  /* models.push_back(
         load_model(
             "green_cube.dae",
             vec3(0.0f, 3.0f, -10.0f),
             45.0f,
             nullptr)
-    );
+    );*/
     /*
     models.push_back(
         load_model(
