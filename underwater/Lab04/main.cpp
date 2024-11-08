@@ -40,9 +40,10 @@ float angle = 0.0f;        // Angle along the path
 static float finAngle = 0.0f; // Declare finAngle as static/global
 
 float squidSpeed = 0.5f; // 鱿鱼移动速度
-float sharkSpeed = 0.8f; // 鲨鱼移动速度
+float sharkSpeed = 1.8f; // 鲨鱼移动速度
 float seahorseDirection = 1.0f; // 鱿鱼方向（1:向上，-1:向下）
 float sharkDirectionX = 1.0f; // 鲨鱼水平移动方向
+float sharkRotationY = 0.0f;
 float squidDirectionX = 1.1f; // 鲨鱼水平移动方向
 
 
@@ -652,11 +653,22 @@ void display() {
         glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), model.hasTexture);
 
         mat4 modelMatrix = identity_mat4();
-        modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
+        if ("assets/shark3.dae" == model.name) {
+            // 创建鲨鱼的变换矩阵
+            modelMatrix = rotate_y_deg(modelMatrix, model.rotationY + sharkRotationY);
+        }
+        else {
+            modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
+        }
+        
         modelMatrix = translate(modelMatrix, model.position);
 
         int matrix_location = glGetUniformLocation(shaderProgramID, "model");
+
+  
+
         glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
+
 
         // Check if model has a color and no texture
         int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
@@ -678,6 +690,7 @@ void display() {
         else {
             std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
         }
+
 
         //std::cout << "name: " + model.name << std::endl;
         if ("terrain1.obj" == model.name || "assets/qst.obj" == model.name) {
@@ -764,8 +777,17 @@ void updateScene() {
         // 更新鲨鱼的X坐标
         if (fish.name == "assets/shark3.dae") { // 假设鲨鱼模型名称为"shark"
             fish.position.v[0] += sharkSpeed * sharkDirectionX * delta; // 水平移动
-            if (fish.position.v[0] >= 15.0f || fish.position.v[0] <= -25.0f) { // 设定水平边界
+            if (fish.position.v[0] >= 10.0f || fish.position.v[0] <= -1.0f) { // 设定水平边界
                 sharkDirectionX *= -1; // 反转方向
+                sharkRotationY += 180.0f; // 改变旋转角度
+                // 更新鲨鱼的旋转
+                // 确保旋转角度在0到360度之间
+                if (sharkRotationY >= 360.0f) {
+                    sharkRotationY -= 360.0f;
+                }
+                else if (sharkRotationY < 0.0f) {
+                    sharkRotationY += 360.0f;
+                }
             }
         }
         if (fish.name == "assets/squid.dae") { // 假设鲨鱼模型名称为"shark"
