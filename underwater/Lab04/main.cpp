@@ -884,11 +884,12 @@ void init() {
             nullptr)
     );
 
+
     models.push_back(
         load_model(
             "assets/seahorse.dae",
-            vec3(0.0f, 0.0f, -30.0f),
-            45.0f,
+            vec3(30.0f, 20.0f, -100.0f),
+            15.0f,
             nullptr)
     );
 
