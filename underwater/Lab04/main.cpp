@@ -820,6 +820,14 @@ void init() {
         30.0f,
         "assets/stone2.jpg")
     );
+    models.push_back(
+        load_model(
+            "box.dae",
+            vec3(0.0f, 40.0f, -10.0f),
+            0.0f,
+            nullptr)
+    );
+
     for (int i = 0;i < 5;i++) {
         models.push_back(
             load_model(
@@ -845,36 +853,21 @@ void init() {
             "assets/qst.png")
     );
 
-  models.push_back(
-        load_model(
-            "assets/weed.dae",
-            vec3(-10.0f, -12.0f, -30.0f),
-            45.0f,
-            nullptr)
-    );
-  models.push_back(
-      load_model(
-          "assets/weed.dae",
-          vec3(5.0f, -12.0f, -30.0f),
-          15.0f,
-          nullptr)
-  );
-    /*
-    models.push_back(
-        load_model(
-            "green_cube.dae",
-            vec3(0.0f, 0.0f, -5.0f),
-            45.0f,
-            nullptr)
-    );
-
-    models.push_back(
-        load_model(
-            "red_cube.dae",
-            vec3(3.0f, 3.0f, -10.0f),
-            45.0f,
-            nullptr)
-    );*/
+      models.push_back(
+            load_model(
+                "assets/weed.dae",
+                vec3(-10.0f, -12.0f, -30.0f),
+                45.0f,
+                nullptr)
+        );
+      models.push_back(
+          load_model(
+              "assets/weed.dae",
+              vec3(5.0f, -12.0f, -30.0f),
+              15.0f,
+              nullptr)
+      );
+   
 
     models.push_back(
         load_model(
