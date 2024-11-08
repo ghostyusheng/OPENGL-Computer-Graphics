@@ -820,6 +820,23 @@ void init() {
         30.0f,
         "assets/stone2.jpg")
     );
+    for (int i = 0;i < 5;i++) {
+        models.push_back(
+            load_model(
+                "assets/white_coral.dae",
+                vec3(i+10, -10.0f, -(10+i)),
+                30+i,
+                nullptr)
+        );
+    }
+   
+    models.push_back(
+        load_model(
+            "assets/white_coral.dae",
+            vec3(5.0f, -12.0f, -10.0f),
+            30.0f,
+            nullptr)
+    );
     models.push_back(
         load_model(
             "assets/qst.obj",
@@ -831,10 +848,17 @@ void init() {
   models.push_back(
         load_model(
             "assets/weed.dae",
-            vec3(-10.0f, -12.0f, -15.0f),
+            vec3(-10.0f, -12.0f, -30.0f),
             45.0f,
             nullptr)
     );
+  models.push_back(
+      load_model(
+          "assets/weed.dae",
+          vec3(5.0f, -12.0f, -30.0f),
+          15.0f,
+          nullptr)
+  );
     /*
     models.push_back(
         load_model(
