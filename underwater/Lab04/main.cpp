@@ -841,7 +841,7 @@ void init() {
             "assets/tkr.dae",
             vec3(-24.0f, -6.5f, -29.0f),
             255.0f,
-            "assets/oip.jpg")
+            "assets/metal1.jpg")
     );
 
     for (int i = 0;i < 5;i++) {
