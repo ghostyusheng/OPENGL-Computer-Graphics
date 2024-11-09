@@ -625,117 +625,129 @@ void display() {
     glClearColor(0.0f, 0.0f, 0.3f, 1.0f); // Adjust values to get the desired color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Enable fog
-    glEnable(GL_FOG);
-    glFogf(GL_FOG_MODE, GL_LINEAR);
-    glFogf(GL_FOG_START, 5.0f);    // Start of fog effect (closer for dense water effect)
-    glFogf(GL_FOG_END, 50.0f);     // End of fog effect
-    float fogColor[4] = { 0.0f, 0.2f, 0.3f, 1.0f }; // Blue-greenish color for fog
-    glFogfv(GL_FOG_COLOR, fogColor);
+    //// Enable fog
+    //glEnable(GL_FOG);
+    //glFogf(GL_FOG_MODE, GL_LINEAR);
+    //glFogf(GL_FOG_START, 5.0f);    // Start of fog effect (closer for dense water effect)
+    //glFogf(GL_FOG_END, 50.0f);     // End of fog effect
+    //float fogColor[4] = { 0.0f, 0.2f, 0.3f, 1.0f }; // Blue-greenish color for fog
+    //glFogfv(GL_FOG_COLOR, fogColor);
 
-    glUseProgram(shaders["model"]);
+    //glUseProgram(shaders["model"]);
 
-    int view_mat_location = glGetUniformLocation(shaders["model"], "view");
-    int proj_mat_location = glGetUniformLocation(shaders["model"], "proj");
+    //int view_mat_location = glGetUniformLocation(shaders["model"], "view");
+    //int proj_mat_location = glGetUniformLocation(shaders["model"], "proj");
 
-    mat4 persp_proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
-    glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
+    //mat4 persp_proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
+    //glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 
-    mat4 view = identity_mat4();
-    view = translate(view, vec3(0.0f, 0.0f, -cameraDistance)); // Apply zoom (camera distance)
-    view = translate(view, -cameraPosition);                   // Apply camera position for WASD
-    view = rotate_x_deg(view, cameraRotationX);                // Vertical rotation
-    view = rotate_y_deg(view, cameraRotationY);                // Horizontal rotation
+    //mat4 view = identity_mat4();
+    //view = translate(view, vec3(0.0f, 0.0f, -cameraDistance)); // Apply zoom (camera distance)
+    //view = translate(view, -cameraPosition);                   // Apply camera position for WASD
+    //view = rotate_x_deg(view, cameraRotationX);                // Vertical rotation
+    //view = rotate_y_deg(view, cameraRotationY);                // Horizontal rotation
 
-    glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
+    //glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
 
-    for (const auto& model : models) {
-        glBindVertexArray(model.vao);
+    //for (const auto& model : models) {
+    //    glBindVertexArray(model.vao);
 
-        if (model.hasTexture) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, model.textureID);
-            glUniform1i(glGetUniformLocation(shaders["model"], "objectTexture"), 0);
-        }
+    //    if (model.hasTexture) {
+    //        glActiveTexture(GL_TEXTURE0);
+    //        glBindTexture(GL_TEXTURE_2D, model.textureID);
+    //        glUniform1i(glGetUniformLocation(shaders["model"], "objectTexture"), 0);
+    //    }
 
-        // 设置useTexture的uniform变量
-        glUniform1i(glGetUniformLocation(shaders["model"], "useTexture"), model.hasTexture);
+    //    // 设置useTexture的uniform变量
+    //    glUniform1i(glGetUniformLocation(shaders["model"], "useTexture"), model.hasTexture);
 
-        mat4 modelMatrix = identity_mat4();
-        if ("assets/shark3.dae" == model.name) {
-            // 创建鲨鱼的变换矩阵
-            modelMatrix = rotate_y_deg(modelMatrix, model.rotationY + sharkRotationY);
-        }
-        else if (model.name == "assets/aincrad.dae") {
-            modelMatrix = rotate_y_deg(modelMatrix, aincradRotationX); // 应用Y轴旋转
-        } else {
-            modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
-        }
-        
-        modelMatrix = translate(modelMatrix, model.position);
+    //    mat4 modelMatrix = identity_mat4();
+    //    if ("assets/shark3.dae" == model.name) {
+    //        // 创建鲨鱼的变换矩阵
+    //        modelMatrix = rotate_y_deg(modelMatrix, model.rotationY + sharkRotationY);
+    //    }
+    //    else if (model.name == "assets/aincrad.dae") {
+    //        modelMatrix = rotate_y_deg(modelMatrix, aincradRotationX); // 应用Y轴旋转
+    //    } else {
+    //        modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
+    //    }
+    //    
+    //    modelMatrix = translate(modelMatrix, model.position);
 
-        int matrix_location = glGetUniformLocation(shaders["model"], "model");
+    //    int matrix_location = glGetUniformLocation(shaders["model"], "model");
 
   
 
-        glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
+    //    glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
 
 
-        // Check if model has a color and no texture
-        int color_location = glGetUniformLocation(shaders["model"], "diffuseColor");
-        //printf("has color : %d \n", model.data.hasColor);
-        //print(model.data.diffuseColor);
+    //    // Check if model has a color and no texture
+    //    int color_location = glGetUniformLocation(shaders["model"], "diffuseColor");
+    //    //printf("has color : %d \n", model.data.hasColor);
+    //    //print(model.data.diffuseColor);
 
-        // 检查 color_location 是否有效
-        if (color_location != -1) {
-            // 根据 hasColor 的值选择颜色
-            if (model.data.hasColor) {
-                glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
-            }
-            else {
-                // 传递一个默认颜色，例如白色
-                vec3 defaultColor(1.0f, 1.0f, 1.0f); // 白色
-                glUniform3fv(color_location, 1, &defaultColor.v[0]);
-            }
-        }
-        else {
-            std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
-        }
-
-
-        //std::cout << "name: " + model.name << std::endl;
-        if ("terrain1.obj" == model.name || "assets/qst.obj" == model.name) {
-            glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
-        }
-        else {
-            glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
-        }
-
-        
-    }
-
-    //glDrawArrays(GL_QUADS, 0, terrain.data.mPointCount);
-
-    mat4 bodyModel = identity_mat4();
-    bodyModel = translate(bodyModel, fishModels[0].position);
-    bodyModel = rotate_y_deg(bodyModel, fishModels[0].rotationY);
-
-    int model_location = glGetUniformLocation(shaders["model"], "model");
-    glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
-
-    for (const auto& model : fishModels) {
-        render_fish(model);
-    }
+    //    // 检查 color_location 是否有效
+    //    if (color_location != -1) {
+    //        // 根据 hasColor 的值选择颜色
+    //        if (model.data.hasColor) {
+    //            glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
+    //        }
+    //        else {
+    //            // 传递一个默认颜色，例如白色
+    //            vec3 defaultColor(1.0f, 1.0f, 1.0f); // 白色
+    //            glUniform3fv(color_location, 1, &defaultColor.v[0]);
+    //        }
+    //    }
+    //    else {
+    //        std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+    //    }
 
 
+    //    //std::cout << "name: " + model.name << std::endl;
+    //    if ("terrain1.obj" == model.name || "assets/qst.obj" == model.name) {
+    //        glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
+    //    }
+    //    else {
+    //        glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
+    //    }
 
-    // Set the texture as active texture unit 0
-    /*glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);*/
+    //    
+    //}
+
+    ////glDrawArrays(GL_QUADS, 0, terrain.data.mPointCount);
+
+    //mat4 bodyModel = identity_mat4();
+    //bodyModel = translate(bodyModel, fishModels[0].position);
+    //bodyModel = rotate_y_deg(bodyModel, fishModels[0].rotationY);
+
+    //int model_location = glGetUniformLocation(shaders["model"], "model");
+    //glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
+
+    //for (const auto& model : fishModels) {
+    //    render_fish(model);
+    //}
 
 
-        // Update and render particles
+
+    glUseProgram(shaders["simple"]);
+
+    mat4 persp_proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
+    glUniformMatrix4fv(glGetUniformLocation(shaders["simple"], "proj"), 1, GL_FALSE, persp_proj.m);
+
+    mat4 view = identity_mat4();
+    view = translate(view, vec3(0.0f, 0.0f, -5.0f)); // 适当设置相机位置
+    glUniformMatrix4fv(glGetUniformLocation(shaders["simple"], "view"), 1, GL_FALSE, view.m);
+
+    // 设置正方形的颜色（例如红色）
+    glUniform4f(glGetUniformLocation(shaders["simple"], "diffuseColor"), 1.0f, 0.0f, 0.0f, 1.0f); // 红色，完全不透明
+
+    // 开始绘制正方形
+    glBegin(GL_QUADS);
+    glVertex3f(-1.0f, -1.0f, -5.0f); // 左下角
+    glVertex3f(1.0f, -1.0f, -5.0f);  // 右下角
+    glVertex3f(1.0f, 1.0f, -5.0f);   // 右上角
+    glVertex3f(-1.0f, 1.0f, -5.0f);  // 左上角
+    glEnd();
 
     glutSwapBuffers();
 }
@@ -820,6 +832,7 @@ void updateScene() {
 
 void init() {
     CompileShaders("model", "simpleVertexShader.txt", "simpleFragmentShader.txt");
+    CompileShaders("simple", "1.glsl", "2.glsl");
 
     loc1 = glGetAttribLocation(shaders["model"], "vertex_position");
     loc2 = glGetAttribLocation(shaders["model"], "vertex_normal");
@@ -1013,7 +1026,7 @@ void mouseMotion(int x, int y) {
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(width, height);
     glutCreateWindow("Hello Triangle");
 

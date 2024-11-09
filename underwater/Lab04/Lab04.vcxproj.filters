@@ -30,4 +30,16 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="1.glsl" />
+    <None Include="2.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="simpleVertexShader.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="simpleFragmentShader.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
