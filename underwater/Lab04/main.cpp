@@ -822,11 +822,19 @@ void init() {
     );
     models.push_back(
         load_model(
+            "assets/aincrad.dae",
+            vec3(0.0f, 0.0f, -10.0f),
+            0.0f,
+            nullptr)
+    );
+
+  /*  models.push_back(
+        load_model(
             "box.dae",
             vec3(0.0f, 40.0f, -10.0f),
             0.0f,
             nullptr)
-    );
+    );*/
 
     for (int i = 0;i < 5;i++) {
         models.push_back(
