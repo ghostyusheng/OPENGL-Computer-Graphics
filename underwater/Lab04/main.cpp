@@ -124,9 +124,12 @@ public:
     vec3 position;
     vec3 velocity;
     float lifetime;
+    float size;    // 水泡大小
+    float alpha;   // 水泡透明度
 
-    Particle(vec3 pos, vec3 vel, float life)
-        : position(pos), velocity(vel), lifetime(life) {}
+    // 确保构造函数接受5个参数
+    Particle(vec3 pos, vec3 vel, float life, float size, float alpha)
+        : position(pos), velocity(vel), lifetime(life), size(size), alpha(alpha) {}
 };
 
 class ParticleSystem {
@@ -145,7 +148,10 @@ public:
     }
 
     void addParticle(vec3 position, vec3 velocity, float lifetime) {
-        particles.emplace_back(position, velocity, lifetime);
+        float size = static_cast<float>(rand() % 5 + 2); // 随机大小
+        float alpha = 0.5f; // 固定透明度
+        // 确保这里传递5个参数
+        particles.emplace_back(position, velocity, lifetime, size, alpha);
     }
 
     const std::vector<Particle>& getParticles() const {
