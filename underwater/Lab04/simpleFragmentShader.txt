@@ -1,0 +1,27 @@
+#version 330 core
+
+in vec3 LightIntensity;
+in vec2 Texcoord;
+
+out vec4 fragColor;
+
+uniform sampler2D objectTexture;
+uniform vec3 diffuseColor; // 用于没有纹理时的颜色
+//uniform vec3 ambientLight = vec3(0.2, 0.3, 0.4); // 环境光
+uniform vec3 ambientLight = vec3(0.07,0.08,0.09);
+uniform bool useTexture; // 新增的uniform变量，用于指示是否使用纹理
+
+void main() {
+    vec3 baseColor;
+
+    if (useTexture) {
+        vec4 textureColor = texture(objectTexture, Texcoord);
+        baseColor = textureColor.rgb; // 使用纹理颜色
+    } else {
+        baseColor = diffuseColor; // 使用diffuseColor
+    }
+
+    // 将环境光添加到光强度中
+    vec3 finalColor = (LightIntensity + ambientLight) * baseColor;
+    fragColor = vec4(finalColor, 1.0); // 使用1.0作为alpha值
+}
