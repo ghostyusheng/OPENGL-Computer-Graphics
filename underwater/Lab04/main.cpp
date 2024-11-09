@@ -25,6 +25,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <map>
 
 vec3 cameraPosition(0.0f, 0.0f, 10.0f);
 float cameraRotationY = 0.0f; // For rotation around the Y-axis
@@ -107,7 +108,8 @@ std::vector<FishModel> fishModels; // Vector to hold multiple models
 #pragma endregion SimpleTypes
 
 using namespace std;
-GLuint shaderProgramID;
+
+std::map<std::string, unsigned int> shaders;
 
 int width = 800;
 int height = 600;
@@ -213,7 +215,7 @@ Model load_heightmap_model(const char* heightmapFile, vec3 position, float rotat
     glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
     glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    GLint loc3 = glGetAttribLocation(shaderProgramID, "vertex_texcoord");
+    GLint loc3 = glGetAttribLocation(shaders["model"], "vertex_texcoord");
     glEnableVertexAttribArray(loc3);
     glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
     glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -362,7 +364,7 @@ Model load_model(const char* file_name, vec3 position, float rotationY, const ch
         glGenBuffers(1, &vt_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
         glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
-        GLint loc3 = glGetAttribLocation(shaderProgramID, "vertex_texcoord");
+        GLint loc3 = glGetAttribLocation(shaders["model"], "vertex_texcoord");
         glEnableVertexAttribArray(loc3);
         glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
     }
@@ -479,7 +481,7 @@ void render_fish(const FishModel& fishModel) {
     std::cout << "body vao: " << std::endl;*/
 
     // Set color uniform
-    glUniform3fv(glGetUniformLocation(shaderProgramID, "fishColor"), 1, &fishModel.color.v[0]);
+    glUniform3fv(glGetUniformLocation(shaders["model"], "fishColor"), 1, &fishModel.color.v[0]);
 
     // Set up body transformation
     mat4 bodyModel = identity_mat4();
@@ -487,8 +489,8 @@ void render_fish(const FishModel& fishModel) {
     bodyModel = rotate_y_deg(bodyModel, fishModel.rotationY);
 
     // Check if model has a color and no texture
-    int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
-    glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), 0);
+    int color_location = glGetUniformLocation(shaders["model"], "diffuseColor");
+    glUniform1i(glGetUniformLocation(shaders["model"], "useTexture"), 0);
     //printf("has color : %d \n", model.data.hasColor);
     //print(model.data.diffuseColor);
 
@@ -501,7 +503,7 @@ void render_fish(const FishModel& fishModel) {
         std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
     }
 
-    int model_location = glGetUniformLocation(shaderProgramID, "model");
+    int model_location = glGetUniformLocation(shaders["model"], "model");
     glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
 
     glBindVertexArray(fishModel.body.vao);
@@ -576,15 +578,17 @@ static void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum Shad
     glAttachShader(ShaderProgram, ShaderObj);
 }
 
-GLuint CompileShaders() {
-    shaderProgramID = glCreateProgram();
+void CompileShaders(string name, string vertex_file, string fragment_file) {
+    GLuint shaderProgramID = glCreateProgram();
     if (shaderProgramID == 0) {
         std::cerr << "Error creating shader program..." << std::endl;
         exit(1);
     }
 
-    AddShader(shaderProgramID, "simpleVertexShader.txt", GL_VERTEX_SHADER);
-    AddShader(shaderProgramID, "simpleFragmentShader.txt", GL_FRAGMENT_SHADER);
+ /*   AddShader(shaderProgramID, "simpleVertexShader.txt", GL_VERTEX_SHADER);
+    AddShader(shaderProgramID, "simpleFragmentShader.txt", GL_FRAGMENT_SHADER);*/
+    AddShader(shaderProgramID, vertex_file.c_str(), GL_VERTEX_SHADER);
+    AddShader(shaderProgramID, fragment_file.c_str(), GL_FRAGMENT_SHADER);
 
     GLint Success = 0;
     GLchar ErrorLog[1024] = { '\0' };
@@ -604,7 +608,9 @@ GLuint CompileShaders() {
         exit(1);
     }
     glUseProgram(shaderProgramID);
-    return shaderProgramID;
+
+    shaders[name] = shaderProgramID;
+    return;
 }
 #pragma endregion SHADER_FUNCTIONS
 
@@ -627,10 +633,10 @@ void display() {
     float fogColor[4] = { 0.0f, 0.2f, 0.3f, 1.0f }; // Blue-greenish color for fog
     glFogfv(GL_FOG_COLOR, fogColor);
 
-    glUseProgram(shaderProgramID);
+    glUseProgram(shaders["model"]);
 
-    int view_mat_location = glGetUniformLocation(shaderProgramID, "view");
-    int proj_mat_location = glGetUniformLocation(shaderProgramID, "proj");
+    int view_mat_location = glGetUniformLocation(shaders["model"], "view");
+    int proj_mat_location = glGetUniformLocation(shaders["model"], "proj");
 
     mat4 persp_proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
     glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
@@ -649,11 +655,11 @@ void display() {
         if (model.hasTexture) {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, model.textureID);
-            glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);
+            glUniform1i(glGetUniformLocation(shaders["model"], "objectTexture"), 0);
         }
 
         // 设置useTexture的uniform变量
-        glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), model.hasTexture);
+        glUniform1i(glGetUniformLocation(shaders["model"], "useTexture"), model.hasTexture);
 
         mat4 modelMatrix = identity_mat4();
         if ("assets/shark3.dae" == model.name) {
@@ -668,7 +674,7 @@ void display() {
         
         modelMatrix = translate(modelMatrix, model.position);
 
-        int matrix_location = glGetUniformLocation(shaderProgramID, "model");
+        int matrix_location = glGetUniformLocation(shaders["model"], "model");
 
   
 
@@ -676,7 +682,7 @@ void display() {
 
 
         // Check if model has a color and no texture
-        int color_location = glGetUniformLocation(shaderProgramID, "diffuseColor");
+        int color_location = glGetUniformLocation(shaders["model"], "diffuseColor");
         //printf("has color : %d \n", model.data.hasColor);
         //print(model.data.diffuseColor);
 
@@ -714,7 +720,7 @@ void display() {
     bodyModel = translate(bodyModel, fishModels[0].position);
     bodyModel = rotate_y_deg(bodyModel, fishModels[0].rotationY);
 
-    int model_location = glGetUniformLocation(shaderProgramID, "model");
+    int model_location = glGetUniformLocation(shaders["model"], "model");
     glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
 
     for (const auto& model : fishModels) {
@@ -813,10 +819,10 @@ void updateScene() {
 
 
 void init() {
-    GLuint shaderProgramID = CompileShaders();
+    CompileShaders("model", "simpleVertexShader.txt", "simpleFragmentShader.txt");
 
-    loc1 = glGetAttribLocation(shaderProgramID, "vertex_position");
-    loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
+    loc1 = glGetAttribLocation(shaders["model"], "vertex_position");
+    loc2 = glGetAttribLocation(shaders["model"], "vertex_normal");
 
     // 加载高度图模型
     //terrain = load_heightmap_model("heightmap.png", vec3(0.0f, -2.0f, -10.0f), 0.0f, 1.0f);
