@@ -854,13 +854,15 @@ void init() {
         );
     }
    
-    models.push_back(
-        load_model(
-            "assets/white_coral.dae",
-            vec3(5.0f, -12.0f, -10.0f),
-            30.0f,
-            nullptr)
-    );
+    for (int i = 0;i < 1;i++) {
+        models.push_back(
+            load_model(
+                "assets/red_coral.dae",
+                vec3(i + 8, -10.0f, -(10 + i + 5)),
+                30 + i,
+                nullptr)
+        );
+    }
     models.push_back(
         load_model(
             "assets/qst.obj",
