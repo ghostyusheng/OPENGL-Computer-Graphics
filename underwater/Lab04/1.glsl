@@ -1,14 +1,13 @@
 #version 330 core
 
-layout(location = 0) in vec3 vertex_position; // 输入顶点位置
-out vec4 FragColor; // 输出到片段着色器的颜色
+layout(location = 0) in vec3 position;
 
-uniform mat4 view; // 视图矩阵
-uniform mat4 proj; // 投影矩阵
-uniform vec4 diffuseColor; // 从主程序传入的颜色
+uniform mat4 view;
+uniform mat4 proj;
+
+out vec4 particleColor;
 
 void main() {
-    // 将顶点位置转换到裁剪空间
-    gl_Position = proj * view * vec4(vertex_position, 1.0);
-    FragColor = diffuseColor; // 将颜色传递给片段着色器
+    gl_Position = proj * view * vec4(position, 1.0);
+    particleColor = vec4(0.0, 0.5, 1.0, 1.0); // 水蓝色
 }

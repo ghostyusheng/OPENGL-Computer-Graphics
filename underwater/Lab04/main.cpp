@@ -119,6 +119,43 @@ GLuint loc1, loc2;
 GLuint textureID;
 Model terrain;
 
+class Particle {
+public:
+    vec3 position;
+    vec3 velocity;
+    float lifetime;
+
+    Particle(vec3 pos, vec3 vel, float life)
+        : position(pos), velocity(vel), lifetime(life) {}
+};
+
+class ParticleSystem {
+private:
+    std::vector<Particle> particles;
+
+public:
+    void update(float deltaTime) {
+        for (auto& particle : particles) {
+            particle.position += particle.velocity * deltaTime;
+            particle.lifetime -= deltaTime;
+        }
+        // 移除生命周期结束的粒子
+        particles.erase(std::remove_if(particles.begin(), particles.end(),
+            [](const Particle& p) { return p.lifetime <= 0; }), particles.end());
+    }
+
+    void addParticle(vec3 position, vec3 velocity, float lifetime) {
+        particles.emplace_back(position, velocity, lifetime);
+    }
+
+    const std::vector<Particle>& getParticles() const {
+        return particles;
+    }
+};
+
+ParticleSystem particleSystem;
+
+
 GLuint loadTexture(const char* filePath) {
     GLuint textureID;
     glGenTextures(1, &textureID);
@@ -708,8 +745,6 @@ void display() {
         else {
             glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
         }
-
-        
     }
 
     //glDrawArrays(GL_QUADS, 0, terrain.data.mPointCount);
@@ -736,16 +771,24 @@ void display() {
     view = translate(view, vec3(0.0f, 0.0f, -5.0f)); // 适当设置相机位置
     glUniformMatrix4fv(glGetUniformLocation(shaders["simple"], "view"), 1, GL_FALSE, view2.m);
 
-    // 设置正方形的颜色（例如红色）
-    glUniform4f(glGetUniformLocation(shaders["simple"], "diffuseColor"), 1.0f, 0.0f, 0.0f, 1.0f); // 红色，完全不透明
+    const auto& particles = particleSystem.getParticles();
 
-    // 开始绘制正方形
-    glBegin(GL_QUADS);
-    glVertex3f(-1.0f, -1.0f, -5.0f); // 左下角
-    glVertex3f(1.0f, -1.0f, -5.0f);  // 右下角
-    glVertex3f(1.0f, 1.0f, -5.0f);   // 右上角
-    glVertex3f(-1.0f, 1.0f, -5.0f);  // 左上角
-    glEnd();
+    if (particles.empty()) {
+        std::cout << "No particles to draw!" << std::endl;
+    }
+    // 绘制粒子
+    for (const auto& particle : particles) {
+        // 设置粒子的位置
+        glUniform3f(glGetUniformLocation(shaders["simple"], "position"),
+            particle.position.v[0],
+            particle.position.v[1],
+            particle.position.v[2]);
+
+        // 绘制粒子（使用点）
+        glBegin(GL_POINTS);
+        glVertex3f(particle.position.v[0], particle.position.v[1], particle.position.v[2]);
+        glEnd();
+    }
 
     glutSwapBuffers();
 }
@@ -822,9 +865,28 @@ void updateScene() {
         }
     }
 
+    // 更新粒子系统
+    particleSystem.update(0.016f);
+    // 检查粒子数量，如果没有粒子，则添加新的粒子
+    if (particleSystem.getParticles().empty()) {
+        for (int i = 0; i < 100; ++i) {
+            particleSystem.addParticle(
+                vec3(rand() % 10 - 5, rand() % 10 - 5, -10), // 随机位置
+                vec3(0.0f, 0.0f, 0.1f), // 向上移动
+                5.0f // 粒子生命周期
+            );
+        }
+    }
+
     glutPostRedisplay(); // Request a redraw to update the display
 }
 
+void timer(int value) {
+    float deltaTime = 0.016f; // 示例，实际应根据时间计算
+    updateScene(); // 更新场景
+    display(); // 绘制场景
+    glutTimerFunc(16, timer, 0); // 每16毫秒调用一次
+}
 
 
 
@@ -943,6 +1005,13 @@ void init() {
         fishModels.push_back(fish);
     }
 
+    for (int i = 0; i < 100; ++i) {
+        particleSystem.addParticle(
+            vec3(rand() % 10 - 5, rand() % 10 - 5, -10), // 随机位置
+            vec3(0.0f, 0.0f, 0.1f), // 向上移动
+            5.0f // 粒子生命周期
+        );
+    }
 }
 
 
@@ -1040,6 +1109,11 @@ int main(int argc, char** argv) {
         return 1;
     }
     init();
+
+    // 注册显示和定时器函数
+    glutDisplayFunc(display);
+    glutTimerFunc(0, timer, 0); // 启动定时器
+
     glutMainLoop();
     return 0;
 }

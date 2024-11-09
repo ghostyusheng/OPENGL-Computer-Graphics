@@ -1,8 +1,8 @@
 #version 330 core
 
-in vec4 FragColor; // 从顶点着色器接收颜色
-out vec4 finalColor; // 输出颜色
+in vec4 particleColor;
+out vec4 fragColor;
 
 void main() {
-    finalColor = FragColor; // 直接输出颜色
+    fragColor = particleColor; // 使用传入的颜色
 }
