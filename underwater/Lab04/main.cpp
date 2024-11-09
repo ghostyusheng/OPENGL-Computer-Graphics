@@ -46,6 +46,9 @@ float sharkDirectionX = 1.0f; // 鲨鱼水平移动方向
 float sharkRotationY = 0.0f;
 float squidDirectionX = 1.1f; // 鲨鱼水平移动方向
 
+float aincradRotationX = 0.0f; // 用于存储aincrad.dae的旋转角度
+
+
 
 
 static std::default_random_engine e;
@@ -657,7 +660,9 @@ void display() {
             // 创建鲨鱼的变换矩阵
             modelMatrix = rotate_y_deg(modelMatrix, model.rotationY + sharkRotationY);
         }
-        else {
+        else if (model.name == "assets/aincrad.dae") {
+            modelMatrix = rotate_y_deg(modelMatrix, aincradRotationX); // 应用Y轴旋转
+        } else {
             modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
         }
         
@@ -742,6 +747,9 @@ void updateScene() {
     float delta = (curr_time - last_time) * 0.001f;
     last_time = curr_time;
 
+    // 更新aincrad的旋转角度
+    aincradRotationX += 10.0f * delta; // 每秒旋转10度（可以根据需要调整速度）
+
 
     // Update each fish model
     for (auto& fish : fishModels) {
@@ -823,7 +831,7 @@ void init() {
     models.push_back(
         load_model(
             "assets/aincrad.dae",
-            vec3(10.0f, 10.0f, -70.0f),
+            vec3(10.0f, 30.0f, -70.0f),
             0.0f,
             nullptr)
     );
