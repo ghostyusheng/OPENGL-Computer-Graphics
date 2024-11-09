@@ -836,6 +836,14 @@ void init() {
             nullptr)
     );
 
+    models.push_back(
+        load_model(
+            "assets/tkr.dae",
+            vec3(-24.0f, -6.5f, -29.0f),
+            255.0f,
+            "assets/oip.jpg")
+    );
+
     for (int i = 0;i < 5;i++) {
         models.push_back(
             load_model(
