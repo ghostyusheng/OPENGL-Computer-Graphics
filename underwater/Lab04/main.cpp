@@ -173,29 +173,30 @@ GLuint loadTexture(const char* filePath) {
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    // Load the texture data
+    // 设置纹理环绕方式和过滤方式
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // 加载纹理数据
     int width, height, channels;
     unsigned char* data = stbi_load(filePath, &width, &height, &channels, 0);
     if (data) {
         GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
 
-        // Upload texture data to OpenGL
+        // 将纹理数据上传到 OpenGL
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-        std::cout << "Texture loaded: " << filePath << " (" << width << "x" << height << ")" << std::endl; // Debug info
+
+        std::cout << "Texture loaded: " << filePath << " (" << width << "x" << height << ")" << std::endl;
+        stbi_image_free(data);
     }
     else {
         std::cerr << "Failed to load texture: " << filePath << std::endl;
         stbi_image_free(data);
         return 0;
     }
-    stbi_image_free(data);
-
-    // Set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     return textureID;
 }
@@ -360,7 +361,7 @@ ModelData load_mesh(const char* file_name) {
     return modelData;
 }
 
-Model load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile) {
+Model load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile, int scale) {
     Model model;
     std::string str;
     str = file_name;
@@ -409,6 +410,12 @@ Model load_model(const char* file_name, vec3 position, float rotationY, const ch
     glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
     if (!model.data.mTextureCoords.empty()) {
+        // 缩放纹理坐标以实现纹理重复
+        for (auto& texCoord : model.data.mTextureCoords) {
+            texCoord.v[0] *= scale;  // 将此值设为你想要的重复倍数
+            texCoord.v[1] *= scale;
+        }
+
         GLuint vt_vbo;
         glGenBuffers(1, &vt_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
@@ -911,14 +918,14 @@ void init() {
         "terrain1.obj",
         vec3(0.0f, -12.0f, -10.0f),
         30.0f,
-        "assets/stone2.jpg")
+        "assets/stone2.jpg", 8)
     );
     models.push_back(
         load_model(
             "assets/aincrad.dae",
             vec3(10.0f, 30.0f, -70.0f),
             0.0f,
-            nullptr)
+            nullptr, 1)
     );
 
     models.push_back(
@@ -926,7 +933,7 @@ void init() {
             "assets/tkr.dae",
             vec3(-8.0f, -10, -9.0f),
             275.0f,
-            "assets/metal1.jpg")
+            "assets/metal1.jpg", 1)
     );
 
     for (int i = 0;i < 5;i++) {
@@ -935,7 +942,7 @@ void init() {
                 "assets/white_coral.dae",
                 vec3(i+10, -10.0f, -(10+i)),
                 30+i,
-                nullptr)
+                nullptr, 1)
         );
     }
    
@@ -945,7 +952,7 @@ void init() {
                 "assets/red_coral.dae",
                 vec3(i + 8, -10.0f, -(10 + i + 5)),
                 30 + i,
-                nullptr)
+                nullptr, 1)
         );
     }
     models.push_back(
@@ -953,7 +960,7 @@ void init() {
             "assets/qst.obj",
             vec3(10.0f, -24.0f, 18.0f),
             45.0f,
-            "assets/qst.png")
+            "assets/qst.png", 1)
     );
 
       models.push_back(
@@ -961,14 +968,14 @@ void init() {
                 "assets/weed.dae",
                 vec3(-10.0f, -12.0f, -30.0f),
                 45.0f,
-                nullptr)
+                nullptr, 1)
         );
       models.push_back(
           load_model(
               "assets/weed.dae",
               vec3(5.0f, -12.0f, -30.0f),
               15.0f,
-              nullptr)
+              nullptr, 1)
       );
    
 
@@ -977,7 +984,7 @@ void init() {
             "assets/shark3.dae",
             vec3(0.0f, 0.0f, -3.0f),
             45.0f,
-            nullptr)
+            nullptr, 1)
     );
 
 
@@ -986,7 +993,7 @@ void init() {
             "assets/seahorse.dae",
             vec3(30.0f, 20.0f, -40.0f),
             15.0f,
-            nullptr)
+            nullptr, 1)
     );
 
     models.push_back(
@@ -994,7 +1001,7 @@ void init() {
             "assets/squid.dae",
             vec3(0.0f, 10.0f, -10.0f),
             45.0f,
-            nullptr)
+            nullptr, 1)
     );
 
     models.push_back(
@@ -1002,7 +1009,7 @@ void init() {
             "assets/squid.dae",
             vec3(-3.0f, 14.0f, -12.0f),
             45.0f,
-            nullptr)
+            nullptr, 1)
     );
 
 
@@ -1012,7 +1019,7 @@ void init() {
     //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 30; ++i) {
+    for (int i = 0; i < 3; ++i) {
         FishModel fish;
         fish = load_fish_model("assets/xxx.dae", vec3(randomFloat(-30, 15), randomFloat(-10,5), randomFloat(-10, -3)), rand() * 10 % 45, "assets/fish.png");
         fish.direction = vec3(randomFloat(1, 10), randomFloat(-4, 4), 0.0f); // Set initial swimming direction
