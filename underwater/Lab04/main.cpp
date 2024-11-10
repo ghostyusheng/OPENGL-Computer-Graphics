@@ -1011,6 +1011,15 @@ void init() {
             45.0f,
             nullptr, 1)
     );
+    models.push_back(
+        load_model(
+            "assets/jiangyou.dae",
+            vec3(12.0f, -12.0f, 3.0f),
+            45.0f,
+            nullptr, 1)
+    );
+
+
 
 
 
@@ -1019,7 +1028,7 @@ void init() {
     //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 100; ++i) {
         FishModel fish;
         fish = load_fish_model("assets/xxx.dae", vec3(randomFloat(-30, 15), randomFloat(-10,5), randomFloat(-10, -3)), rand() * 10 % 45, "assets/fish.png");
         fish.direction = vec3(randomFloat(1, 10), randomFloat(-4, 4), 0.0f); // Set initial swimming direction
