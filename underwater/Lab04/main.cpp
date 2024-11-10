@@ -981,13 +981,13 @@ void init() {
     );
 
 
-    //models.push_back(
-    //    load_model(
-    //        "assets/seahorse.dae",
-    //        vec3(30.0f, 20.0f, -100.0f),
-    //        15.0f,
-    //        nullptr)
-    //);
+    models.push_back(
+        load_model(
+            "assets/seahorse.dae",
+            vec3(30.0f, 20.0f, -40.0f),
+            15.0f,
+            nullptr)
+    );
 
     models.push_back(
         load_model(
