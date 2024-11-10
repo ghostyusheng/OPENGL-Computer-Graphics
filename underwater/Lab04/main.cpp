@@ -35,7 +35,7 @@ bool leftMousePressed = false;
 int lastMouseX, lastMouseY;
 
 vec3 fishPosition(0.0f, 0.0f, 0.0f);
-float traceRadius = 5.0f;  // Radius of the swimming circle
+float traceRadius = 15.0f;  // Radius of the swimming circle
 float traceSpeed = 0.5f;   // Speed of the fish movement
 float angle = 0.0f;        // Angle along the path
 static float finAngle = 0.0f; // Declare finAngle as static/global
@@ -54,8 +54,14 @@ float aincradRotationX = 0.0f; // 用于存储aincrad.dae的旋转角度
 
 static std::default_random_engine e;
 
-float get_rand(int min, int max) {
-    return e() % (max - min) + min;
+float randomFloat(float min, float max) {
+    // 确保 min 小于 max
+    if (min > max) {
+        std::swap(min, max);
+    }
+    // 生成随机浮点数
+    float scale = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); // [0, 1]
+    return min + scale * (max - min); // [min, max]
 }
 
 /*----------------------------------------------------------------------------
@@ -424,7 +430,7 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY,
     fishModel.rotationY = rotationY;
 
     // Generate a random color
-    fishModel.color = vec3(get_rand(0, 255) / 255.0f, get_rand(0, 255) / 255.0f, get_rand(0, 255) / 255.0f);
+    fishModel.color = vec3(randomFloat(0, 255) / 255.0f, randomFloat(0, 255) / 255.0f, randomFloat(0, 255) / 255.0f);
     // Debug output to check color
     std::cout << "Fish Color: (" << fishModel.color.v[0] << ", " << fishModel.color.v[1] << ", " << fishModel.color.v[2] << ")\n";
 
@@ -918,8 +924,8 @@ void init() {
     models.push_back(
         load_model(
             "assets/tkr.dae",
-            vec3(-24.0f, -6.5f, -29.0f),
-            255.0f,
+            vec3(-8.0f, -10, -9.0f),
+            275.0f,
             "assets/metal1.jpg")
     );
 
@@ -933,7 +939,7 @@ void init() {
         );
     }
    
-    for (int i = 0;i < 1;i++) {
+    for (int i = 0;i < 3;i++) {
         models.push_back(
             load_model(
                 "assets/red_coral.dae",
@@ -945,7 +951,7 @@ void init() {
     models.push_back(
         load_model(
             "assets/qst.obj",
-            vec3(0.0f, -20.0f, -3.0f),
+            vec3(10.0f, -24.0f, 18.0f),
             45.0f,
             "assets/qst.png")
     );
@@ -975,18 +981,26 @@ void init() {
     );
 
 
+    //models.push_back(
+    //    load_model(
+    //        "assets/seahorse.dae",
+    //        vec3(30.0f, 20.0f, -100.0f),
+    //        15.0f,
+    //        nullptr)
+    //);
+
     models.push_back(
         load_model(
-            "assets/seahorse.dae",
-            vec3(30.0f, 20.0f, -100.0f),
-            15.0f,
+            "assets/squid.dae",
+            vec3(0.0f, 10.0f, -10.0f),
+            45.0f,
             nullptr)
     );
 
     models.push_back(
         load_model(
             "assets/squid.dae",
-            vec3(0.0f, -3.0f, -10.0f),
+            vec3(-3.0f, 14.0f, -12.0f),
             45.0f,
             nullptr)
     );
@@ -998,10 +1012,10 @@ void init() {
     //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 60; ++i) {
+    for (int i = 0; i < 30; ++i) {
         FishModel fish;
-        fish = load_fish_model("assets/xxx.dae", vec3(rand() % 10, i * rand(), -10.0f), rand(), "assets/fish.png");
-        fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
+        fish = load_fish_model("assets/xxx.dae", vec3(randomFloat(-30, 15), randomFloat(-10,5), randomFloat(-10, -3)), rand() * 10 % 45, "assets/fish.png");
+        fish.direction = vec3(randomFloat(1, 10), randomFloat(-4, 4), 0.0f); // Set initial swimming direction
         fishModels.push_back(fish);
     }
 
