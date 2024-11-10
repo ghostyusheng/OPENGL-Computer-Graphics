@@ -854,13 +854,7 @@ void updateScene() {
                 sharkDirectionX *= -1; // 反转方向
                 sharkRotationY += 180.0f; // 改变旋转角度
                 // 更新鲨鱼的旋转
-                // 确保旋转角度在0到360度之间
-                if (sharkRotationY >= 360.0f) {
-                    sharkRotationY -= 360.0f;
-                }
-                else if (sharkRotationY < 0.0f) {
-                    sharkRotationY += 360.0f;
-                }
+
             }
         }
         if (fish.name == "assets/squid.dae") { // 假设鲨鱼模型名称为"shark"
@@ -1004,9 +998,9 @@ void init() {
     //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 60; ++i) {
         FishModel fish;
-        fish = load_fish_model("assets/xxx.dae", vec3(0.0f, i * -2.0f, -10.0f), 45.0f, "assets/fish.png");
+        fish = load_fish_model("assets/xxx.dae", vec3(rand() % 10, i * rand(), -10.0f), rand(), "assets/fish.png");
         fish.direction = vec3(get_rand(1,10), i, 0.0f); // Set initial swimming direction
         fishModels.push_back(fish);
     }
