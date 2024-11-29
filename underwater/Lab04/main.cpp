@@ -26,6 +26,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <map>
+#include "Window.h"
 
 vec3 cameraPosition(0.0f, 0.0f, 10.0f);
 float cameraRotationY = 0.0f; // For rotation around the Y-axis
@@ -1122,31 +1123,35 @@ void mouseMotion(int x, int y) {
 
 
 int main(int argc, char** argv) {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(width, height);
-    glutCreateWindow("Hello Triangle");
+    Window w;
+    w.init(argc, argv);
+    std::cout << w.name << std::endl;
+    
+    //glutInit(&argc, argv);
+    //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    //glutInitWindowSize(width, height);
+    //glutCreateWindow("Hello Triangle");
 
-    // 设置全屏
-    //glutFullScreen();
+    //// 设置全屏
+    ////glutFullScreen();
 
-    glutDisplayFunc(display);
-    glutIdleFunc(updateScene);
-    glutKeyboardFunc(keypress);
-    glutMouseFunc(mouseButton);
-    glutMotionFunc(mouseMotion);
+    //glutDisplayFunc(display);
+    //glutIdleFunc(updateScene);
+    //glutKeyboardFunc(keypress);
+    //glutMouseFunc(mouseButton);
+    //glutMotionFunc(mouseMotion);
 
-    GLenum res = glewInit();
-    if (res != GLEW_OK) {
-        fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
-        return 1;
-    }
-    init();
+    //GLenum res = glewInit();
+    //if (res != GLEW_OK) {
+    //    fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
+    //    return 1;
+    //}
+    //init();
 
-    // 注册显示和定时器函数
-    glutDisplayFunc(display);
-    glutTimerFunc(0, timer, 0); // 启动定时器
+    //// 注册显示和定时器函数
+    //glutDisplayFunc(display);
+    //glutTimerFunc(0, timer, 0); // 启动定时器
 
-    glutMainLoop();
+    //glutMainLoop();
     return 0;
 }
