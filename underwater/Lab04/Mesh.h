@@ -53,10 +53,10 @@ struct FishModel {
 
 class Mesh {
 public:
-    ModelData load_obj_mesh(const char* file_name);
-    ModelData load_mesh(const char* file_name);
-    Model load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile, int scale);
+    static ModelData load_obj_mesh(const char* file_name);
+    static ModelData load_mesh(const char* file_name);
+    static Model load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile, int scale);
 
 private:
-    GLuint loadTexture(const char* textureFile); // 加载纹理的函数声明
+    static GLuint loadTexture(const char* textureFile); // 加载纹理的函数声明
 };

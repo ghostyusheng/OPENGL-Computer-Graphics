@@ -1125,7 +1125,7 @@ void mouseMotion(int x, int y) {
 int main(int argc, char** argv) {
     Window w;
     w.init(argc, argv);
-    std::cout << w.name << std::endl;
+
     
     //glutInit(&argc, argv);
     //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);

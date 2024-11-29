@@ -24,8 +24,6 @@ void sceneShow() {
 
 void Window::init(int argc, char** argv)
 {
-    int width = 800;
-    int height = 600;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(width, height);
@@ -33,7 +31,7 @@ void Window::init(int argc, char** argv)
     //glutFullScreen();
 
     glutDisplayFunc(displayShow);
-    glutIdleFunc(sceneShow);
+    //glutIdleFunc(sceneShow);
     /*glutKeyboardFunc(keypress);
     glutMouseFunc(mouseButton);
     glutMotionFunc(mouseMotion);*/

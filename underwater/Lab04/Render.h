@@ -18,6 +18,7 @@
 class Render {
 public:
     static void render();
+    static void initModel();
     void initResource();
 };
 

@@ -13,9 +13,8 @@ public:
     void init(int argc, char** argv);
 
 
-    // 私有成员变量
-    std::string name;
-    int value;
+    static const int width = 800;
+    static const int height = 600;
 };
 
 void display();

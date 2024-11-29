@@ -89,6 +89,7 @@ ModelData Mesh::load_mesh(const char* file_name) {
 
 // º”‘ÿƒ£–Õ
 Model Mesh::load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile, int scale) {
+    printf("loading model: %s \n", file_name);
     Model model;
     model.name = file_name;
 
