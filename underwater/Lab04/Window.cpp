@@ -6,6 +6,7 @@
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include "Render.h"
 
 
 // 构造函数实现
@@ -13,7 +14,12 @@
 //    : name(name), value(value) {}
 
 void displayShow() {
+    Render::render();
     glutSwapBuffers();
+}
+
+void sceneShow() {
+    glutPostRedisplay(); // Request a redraw to update the display
 }
 
 void Window::init(int argc, char** argv)
@@ -27,8 +33,8 @@ void Window::init(int argc, char** argv)
     //glutFullScreen();
 
     glutDisplayFunc(displayShow);
-    /*glutIdleFunc(updateScene);
-    glutKeyboardFunc(keypress);
+    glutIdleFunc(sceneShow);
+    /*glutKeyboardFunc(keypress);
     glutMouseFunc(mouseButton);
     glutMotionFunc(mouseMotion);*/
 
@@ -37,7 +43,9 @@ void Window::init(int argc, char** argv)
         fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
         return;
     }
-    //init();
+
+    Render r;
+    r.initResource();
 
     glutMainLoop();
 }
