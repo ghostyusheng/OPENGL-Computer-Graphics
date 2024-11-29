@@ -1,4 +1,5 @@
 #include "Render.h"
+#include "Shader.h"
 
 void Render::render()
 {
@@ -13,5 +14,7 @@ void Render::render()
 
 void Render::initResource()
 {
+    Shader::CompileShaders("model", "simpleVertexShader.txt", "simpleFragmentShader.txt");
+    Shader::CompileShaders("simple", "1.glsl", "2.glsl");
 
 }
