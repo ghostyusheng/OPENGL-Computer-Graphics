@@ -1039,7 +1039,7 @@ void init() {
         particleSystem.addParticle(
             vec3(rand() % 10 - 5, rand() % 10 - 5, -10), // 随机位置
             vec3(0.0f, 0.0f, 0.1f), // 向上移动
-            5.0f // 粒子生命周期
+            5000.0f // 粒子生命周期
         );
     }
 }
@@ -1126,6 +1126,9 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(width, height);
     glutCreateWindow("Hello Triangle");
+
+    // 设置全屏
+    //glutFullScreen();
 
     glutDisplayFunc(display);
     glutIdleFunc(updateScene);
