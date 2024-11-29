@@ -7,6 +7,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "Render.h"
+#include "Keyboard.h"
 
 
 // 构造函数实现
@@ -32,9 +33,9 @@ void Window::init(int argc, char** argv)
 
     glutDisplayFunc(displayShow);
     //glutIdleFunc(sceneShow);
-    /*glutKeyboardFunc(keypress);
-    glutMouseFunc(mouseButton);
-    glutMotionFunc(mouseMotion);*/
+    glutKeyboardFunc(Keyboard::keypress);
+    glutMouseFunc(Keyboard::mouseButton);
+    glutMotionFunc(Keyboard::mouseMotion);
 
     GLenum res = glewInit();
     if (res != GLEW_OK) {

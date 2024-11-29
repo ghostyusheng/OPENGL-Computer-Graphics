@@ -3,13 +3,8 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Window.h"
+#include "global.h"
 
-vector<Model> objs;
-
-vec3 mycameraPosition(0.0f, 0.0f, 10.0f);
-float mycameraRotationY = 0.0f; // For rotation around the Y-axis
-float mycameraRotationX = 0.0f; // New for vertical rotation
-float mycameraDistance = 10.0f; // Camera distance for zoom control
 
 void Render::render()
 {
