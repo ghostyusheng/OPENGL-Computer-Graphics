@@ -39,6 +39,9 @@
     <ClCompile Include="global.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="maths_funcs.h">
@@ -65,10 +68,14 @@
     <ClInclude Include="global.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="1.glsl" />
     <None Include="2.glsl" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="simpleVertexShader.txt">

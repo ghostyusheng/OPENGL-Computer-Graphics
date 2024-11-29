@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Window.h"
 #include "global.h"
+#include "Log.h"
 
 
 void Render::render()
@@ -25,6 +26,7 @@ void Render::render()
     glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 
     mat4 view = identity_mat4();
+
     view = translate(view, vec3(0.0f, 0.0f, -mycameraDistance)); // Apply zoom (camera distance)
     view = translate(view, -mycameraPosition);                   // Apply camera position for WASD
     view = rotate_x_deg(view, mycameraRotationX);                // Vertical rotation
@@ -39,6 +41,8 @@ void Render::render()
         int matrix_location = glGetUniformLocation(Shader::shaders["model"], "model");
         glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
         //printf("points: %d \n", model.data.mPointCount);
+        //logger.info("test");
+        Log::log(Log::Level::INFO, Str("-> {} ", model.data.mPointCount));
         glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
 
     }

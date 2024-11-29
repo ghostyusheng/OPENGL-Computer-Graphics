@@ -1,5 +1,6 @@
 #include "global.h"
 
+
 // 全局变量定义
 std::vector<Model> objs;
 

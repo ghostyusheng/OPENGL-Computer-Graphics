@@ -57,6 +57,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)\libs\assimp\include;$(SolutionDir)\libs\glew-1.10.0\include;$(SolutionDir)\libs\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)\libs\assimp\lib\Debug;$(SolutionDir)\libs\glew-1.10.0\lib\Release\Win32;$(SolutionDir)\libs\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -82,6 +83,7 @@
   <ItemGroup>
     <ClCompile Include="global.cpp" />
     <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="maths_funcs.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -92,6 +94,7 @@
   <ItemGroup>
     <ClInclude Include="global.h" />
     <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="maths_funcs.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Render.h" />
@@ -102,6 +105,7 @@
   <ItemGroup>
     <None Include="1.glsl" />
     <None Include="2.glsl" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="simpleFragmentShader.txt" />
@@ -109,5 +113,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\fmt.7.0.1\build\fmt.targets" Condition="Exists('..\packages\fmt.7.0.1\build\fmt.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\fmt.7.0.1\build\fmt.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fmt.7.0.1\build\fmt.targets'))" />
+  </Target>
 </Project>

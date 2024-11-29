@@ -2,6 +2,10 @@
 
 #include "Mesh.h"
 #include <vector>
+#include <fmt/core.h>
+
+#define Str(fmt_str, ...) fmt::format(fmt_str, __VA_ARGS__)
+
 
 // 全局变量声明
 extern std::vector<Model> objs;

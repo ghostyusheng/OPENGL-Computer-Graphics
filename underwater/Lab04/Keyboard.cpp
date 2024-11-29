@@ -60,6 +60,7 @@ void Keyboard::mouseButton(int button, int state, int x, int y) {
         mycameraDistance += 1.0f;
         if (mycameraDistance > 50.0f) mycameraDistance = 50.0f; // Limit zoom-out distance
     }
+    glutPostRedisplay();
 }
 
 void Keyboard::mouseMotion(int x, int y) {
