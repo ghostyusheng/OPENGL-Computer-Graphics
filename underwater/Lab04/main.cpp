@@ -23,8 +23,7 @@
 #include "maths_funcs.h"
 #include "corecrt_math_defines.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+
 #include <map>
 #include "Window.h"
 
@@ -169,111 +168,9 @@ public:
 ParticleSystem particleSystem;
 
 
-GLuint loadTexture(const char* filePath) {
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    // 设置纹理环绕方式和过滤方式
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // 加载纹理数据
-    int width, height, channels;
-    unsigned char* data = stbi_load(filePath, &width, &height, &channels, 0);
-    if (data) {
-        GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
-
-        // 将纹理数据上传到 OpenGL
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        std::cout << "Texture loaded: " << filePath << " (" << width << "x" << height << ")" << std::endl;
-        stbi_image_free(data);
-    }
-    else {
-        std::cerr << "Failed to load texture: " << filePath << std::endl;
-        stbi_image_free(data);
-        return 0;
-    }
-
-    return textureID;
-}
 
 int  channels;
 
-ModelData load_heightmap(const char* file_name, float heightScale) {
-    int width = 100;
-    int height = 100;
-    ModelData modelData;
-    unsigned char* heightMap = stbi_load(file_name, &width, &height, &channels, 0);
-
-    if (!heightMap) {
-        std::cerr << "Failed to load heightmap: " << file_name << std::endl;
-        return modelData;
-    }
-
-    modelData.mPointCount = width * height;
-
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            // 计算高度
-            float heightValue = heightMap[y * width + x] / 255.0f * heightScale;
-
-            // 添加顶点
-            modelData.mVertices.push_back(vec3(x, heightValue, y));
-            modelData.mNormals.push_back(vec3(0.0f, 1.0f, 0.0f)); // 简单法线
-            modelData.mTextureCoords.push_back(vec2((float)x / (width - 1), (float)y / (height - 1)));
-        }
-    }
-
-    stbi_image_free(heightMap);
-    return modelData;
-}
-
-Model load_heightmap_model(const char* heightmapFile, vec3 position, float rotationY, float heightScale) {
-    Model model;
-    model.data = load_heightmap(heightmapFile, heightScale);
-    model.position = position;
-    model.rotationY = rotationY;
-    model.hasTexture = false;
-
-    // 创建 VAO 和 VBOs
-    glGenVertexArrays(1, &model.vao);
-    glBindVertexArray(model.vao);
-
-    GLuint vp_vbo, vn_vbo, vt_vbo;
-    glGenBuffers(1, &vp_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mVertices[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &vn_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mNormals[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &vt_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
-
-    // 设置顶点属性
-    glEnableVertexAttribArray(loc1);
-    glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-    glVertexAttribPointer(loc1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    glEnableVertexAttribArray(loc2);
-    glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-    glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    GLint loc3 = glGetAttribLocation(shaders["model"], "vertex_texcoord");
-    glEnableVertexAttribArray(loc3);
-    glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-    glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    glBindVertexArray(0);
-    return model;
-}
 
 
 
@@ -382,7 +279,7 @@ Model load_model(const char* file_name, vec3 position, float rotationY, const ch
     model.hasTexture = false;
 
     if (textureFile != nullptr && strlen(textureFile) > 0) {
-        model.textureID = loadTexture(textureFile);
+        model.textureID = -1;
         model.hasTexture = true;
     }
 
@@ -445,7 +342,7 @@ FishModel load_fish_model(const char* file_name, vec3 position, float rotationY,
     fishModel.hasTexture = false;
 
     if (textureFile != nullptr && strlen(textureFile) > 0) {
-        fishModel.textureID = loadTexture(textureFile);
+        fishModel.textureID = -1;
         fishModel.hasTexture = true;
     }
 

@@ -4,6 +4,8 @@
 #include <assimp/cimport.h> // scene importer
 #include <assimp/scene.h> // collects data
 #include <assimp/postprocess.h> // various extra operations
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "Shader.h"
 
 // 加载 OBJ 格式的网格
@@ -156,9 +158,35 @@ Model Mesh::load_model(const char* file_name, vec3 position, float rotationY, co
 }
 
 // 加载纹理的函数实现（示例）
-GLuint Mesh::loadTexture(const char* textureFile) {
-    // 这里应该添加具体的纹理加载代码
-    GLuint textureID = 1;
-    // 加载纹理代码...
-    return textureID;
+GLuint Mesh::loadTexture(const char* filePath) {
+        GLuint textureID;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        // 设置纹理环绕方式和过滤方式
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // 加载纹理数据
+        int width, height, channels;
+        unsigned char* data = stbi_load(filePath, &width, &height, &channels, 0);
+        if (data) {
+            GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
+
+            // 将纹理数据上传到 OpenGL
+            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            std::cout << "Texture loaded: " << filePath << " (" << width << "x" << height << ")" << std::endl;
+            stbi_image_free(data);
+        }
+        else {
+            std::cerr << "Failed to load texture: " << filePath << std::endl;
+            stbi_image_free(data);
+            return 0;
+        }
+
+        return textureID;
 }

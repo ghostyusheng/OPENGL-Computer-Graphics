@@ -14,11 +14,15 @@
 #include <string>
 #include <random>
 #include <iostream>
+#include "Mesh.h"
 
 class Render {
 public:
+    static void renderModel(Model& model);
     static void render();
     static void initModel();
+    static void bindColor(int colorLocation, const vec3& color, bool hasColor);
+    static void bindTexture(int textureID);
     void initResource();
 };
 

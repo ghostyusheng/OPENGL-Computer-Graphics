@@ -28,7 +28,7 @@ struct Model {
     vec3 position;
     float rotationY;
     GLuint vao; // 该模型的 VAO
-    GLuint textureID;
+    GLuint textureID; //纹理
     bool hasTexture; // 指示是否有纹理
 };
 
