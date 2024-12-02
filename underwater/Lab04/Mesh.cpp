@@ -44,6 +44,48 @@ ModelData Mesh::load_obj_mesh(const char* file_name) {
     return modelData;
 }
 
+void loadMeshRecursive(const aiNode* node, const aiScene* scene, ModelData& modelData) {
+    // 遍历当前节点的所有网格
+    for (unsigned int m_i = 0; m_i < node->mNumMeshes; m_i++) {
+        Log::log(Log::Level::INFO, Str(" -> loading mesh {}", m_i)); // 保留您的日志
+        const aiMesh* mesh = scene->mMeshes[node->mMeshes[m_i]];
+        SubMesh subMesh; // 创建一个子网格
+
+        for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
+            if (mesh->HasPositions()) {
+                const aiVector3D* vp = &(mesh->mVertices[v_i]);
+                subMesh.vertices.push_back(vec3(vp->x, vp->y, vp->z));
+            }
+            if (mesh->HasNormals()) {
+                const aiVector3D* vn = &(mesh->mNormals[v_i]);
+                subMesh.normals.push_back(vec3(vn->x, vn->y, vn->z));
+            }
+            if (mesh->HasTextureCoords(0)) {
+                const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
+                subMesh.textureCoords.push_back(vec2(vt->x, vt->y));
+            }
+        }
+
+        // 加载漫反射颜色
+        if (scene->mMaterials[mesh->mMaterialIndex]) {
+            aiColor4D diffuse;
+            if (AI_SUCCESS == aiGetMaterialColor(scene->mMaterials[mesh->mMaterialIndex], AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
+                subMesh.diffuseColor = vec3(diffuse.r, diffuse.g, diffuse.b);
+                subMesh.hasColor = true; // 设置标志以指示颜色的存在
+            }
+        }
+
+        modelData.subMeshes.push_back(subMesh); // 添加子网格
+        modelData.mPointCount += mesh->mNumVertices; // 更新总点数
+    }
+
+    // 递归加载子节点
+    for (unsigned int n_i = 0; n_i < node->mNumChildren; n_i++) {
+        loadMeshRecursive(node->mChildren[n_i], scene, modelData);
+    }
+}
+
+
 // 加载其他格式的网格
 ModelData Mesh::load_mesh(const char* file_name) {
     ModelData modelData;
@@ -57,40 +99,16 @@ ModelData Mesh::load_mesh(const char* file_name) {
         printf("=> loaded: %s \n", file_name);
     }
 
-    for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
-        Log::log(Log::Level::INFO, Str("{} -> loading mesh {}", file_name, m_i));
-        const aiMesh* mesh = scene->mMeshes[m_i];
-        modelData.mPointCount += mesh->mNumVertices;
-
-        for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
-            if (mesh->HasPositions()) {
-                const aiVector3D* vp = &(mesh->mVertices[v_i]);
-                modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
-            }
-            if (mesh->HasNormals()) {
-                const aiVector3D* vn = &(mesh->mNormals[v_i]);
-                modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
-            }
-            if (mesh->HasTextureCoords(0)) {
-                const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
-                modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
-            }
-
-            // 加载漫反射颜色
-            if (scene->mMaterials[mesh->mMaterialIndex]) {
-                aiColor4D diffuse;
-                if (AI_SUCCESS == aiGetMaterialColor(scene->mMaterials[mesh->mMaterialIndex], AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
-                    modelData.diffuseColor = vec3(diffuse.r, diffuse.g, diffuse.b);
-                    modelData.hasColor = true; // 设置标志以指示颜色的存在
-                }
-            }
-        }
-    }
+    // 从根节点开始加载
+    loadMeshRecursive(scene->mRootNode, scene, modelData);
 
     printf("=> count : %d \n", modelData.mPointCount);
+    printf("=> sub mesh count: %d \n", modelData.subMeshes.size()); // 打印子网格数量
     aiReleaseImport(scene);
     return modelData;
 }
+
+
 
 // 加载模型
 Model Mesh::load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile, int scale) {
@@ -120,15 +138,28 @@ Model Mesh::load_model(const char* file_name, vec3 position, float rotationY, co
     glGenVertexArrays(1, &model.vao);
     glBindVertexArray(model.vao);
 
+    // 合并所有子网格的顶点和法线
+    std::vector<vec3> allVertices;
+    std::vector<vec3> allNormals;
+    std::vector<vec2> allTextureCoords;
+
+    for (auto& subMesh : model.data.subMeshes) {
+        // 计算并设置 vertexCount
+        subMesh.vertexCount = subMesh.vertices.size(); // 假设 subMesh 有 vertices 属性
+        allVertices.insert(allVertices.end(), subMesh.vertices.begin(), subMesh.vertices.end());
+        allNormals.insert(allNormals.end(), subMesh.normals.begin(), subMesh.normals.end());
+        allTextureCoords.insert(allTextureCoords.end(), subMesh.textureCoords.begin(), subMesh.textureCoords.end());
+    }
+
     // 生成 VBOs
     GLuint vp_vbo, vn_vbo;
     glGenBuffers(1, &vp_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mVertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, allVertices.size() * sizeof(vec3), allVertices.data(), GL_STATIC_DRAW);
 
     glGenBuffers(1, &vn_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mNormals[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, allNormals.size() * sizeof(vec3), allNormals.data(), GL_STATIC_DRAW);
 
     // 链接顶点位置
     glEnableVertexAttribArray(glGetAttribLocation(Shader::shaders["model"], "vertex_position"));
@@ -140,9 +171,9 @@ Model Mesh::load_model(const char* file_name, vec3 position, float rotationY, co
     glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
     glVertexAttribPointer(glGetAttribLocation(Shader::shaders["model"], "vertex_normal"), 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    if (!model.data.mTextureCoords.empty()) {
+    if (!allTextureCoords.empty()) {
         // 缩放纹理坐标以实现纹理重复
-        for (auto& texCoord : model.data.mTextureCoords) {
+        for (auto& texCoord : allTextureCoords) {
             texCoord.v[0] *= scale;  // 将此值设为你想要的重复倍数
             texCoord.v[1] *= scale;
         }
@@ -150,7 +181,7 @@ Model Mesh::load_model(const char* file_name, vec3 position, float rotationY, co
         GLuint vt_vbo;
         glGenBuffers(1, &vt_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-        glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, allTextureCoords.size() * sizeof(vec2), allTextureCoords.data(), GL_STATIC_DRAW);
         GLint loc3 = glGetAttribLocation(Shader::shaders["model"], "vertex_texcoord");
         glEnableVertexAttribArray(loc3);
         glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -159,6 +190,7 @@ Model Mesh::load_model(const char* file_name, vec3 position, float rotationY, co
     glBindVertexArray(0); // 完成设置后解绑 VAO
     return model;
 }
+
 
 // 加载纹理的函数实现（示例）
 GLuint Mesh::loadTexture(const char* filePath) {

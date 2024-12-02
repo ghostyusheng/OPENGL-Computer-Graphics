@@ -11,6 +11,17 @@
 
 using namespace std;
 
+struct SubMesh {
+    std::vector<vec3> vertices;
+    std::vector<vec3> normals;
+    std::vector<vec2> textureCoords;
+    vec3 diffuseColor;
+    bool hasColor;
+    GLuint vao; // VAO for the submesh
+    GLuint textureID; // Texture ID for the submesh
+    int vertexCount;
+};
+
 // 定义模型数据结构
 typedef struct {
     size_t mPointCount = 0;
@@ -19,12 +30,14 @@ typedef struct {
     vector<vec2> mTextureCoords;
     vec3 diffuseColor = vec3(1.0f, 1.0f, 1.0f); // 默认颜色（白色）
     bool hasColor = false; // 指示是否定义了颜色
+    vector<SubMesh> subMeshes;
 } ModelData;
+
 
 // 定义模型结构
 struct Model {
-    ModelData data;
     string name;
+    ModelData data;
     vec3 position;
     float rotationY;
     GLuint vao; // 该模型的 VAO

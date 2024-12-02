@@ -8,8 +8,6 @@
 
 void Render::renderModel(Model& model) {
     // 切换着色器（根据模型类型）
-    string shaderName = model.name;
-    //Log::log(Log::Level::INFO, Str("-> {}", shaderName));
     GLuint shaderProgram = Shader::shaders["model"]; // 假设每个模型都有一个shaderName
     glUseProgram(shaderProgram);
 
@@ -30,27 +28,24 @@ void Render::renderModel(Model& model) {
     if (model.hasTexture) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, model.textureID);
-        glUniform1i(glGetUniformLocation(Shader::shaders["model"], "objectTexture"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram, "objectTexture"), 0);
     }
 
     // 设置useTexture的uniform变量
-    glUniform1i(glGetUniformLocation(Shader::shaders["model"], "useTexture"), model.hasTexture);
+    glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), model.hasTexture);
 
+    // 遍历每个子网格并绘制
+    for (const auto& subMesh : model.data.subMeshes) {
+        // 绑定子网格的 VAO（如果每个子网格有独立的 VAO）
+        glBindVertexArray(subMesh.vao); // 确保每个子网格都有自己的 VAO
 
-    // 绑定纹理（如果有）
-    if (model.textureID != -1) {
-        Render::bindTexture(model.textureID);
+        // 绘制子网格
+        glDrawArrays(GL_TRIANGLES, 0, subMesh.vertexCount); // 这里假设每个子网格都有一个 vertexCount 属性
     }
 
-    // 绘制模型
-    if ("terrain1.obj" == model.name || "assets/qst.obj" == model.name) {
-        glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
-    }
-    else {
-        glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
-    }
+    // 解绑 VAO
+    glBindVertexArray(0);
 }
-
 
 void Render::render() {
     glEnable(GL_BLEND);
@@ -80,6 +75,7 @@ void Render::render() {
         renderModel(model);
     }
 }
+
 
 
 void Render::initResource()
