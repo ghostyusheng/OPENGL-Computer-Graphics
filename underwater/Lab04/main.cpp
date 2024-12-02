@@ -137,6 +137,19 @@ Model terrain;
 
 bool lightEnabled = true; // 光源开关状态
 
+#include <vector>
+
+// 定义六种颜色
+std::vector<float> lightColors[6] = {
+    {1.0f, 0.0f, 0.0f}, // 红色
+    {0.0f, 1.0f, 0.0f}, // 绿色
+    {0.0f, 0.0f, 1.0f}, // 蓝色
+    {1.0f, 1.0f, 0.0f}, // 黄色
+    {1.0f, 0.0f, 1.0f}, // 品红
+    {0.0f, 1.0f, 1.0f}  // 青色
+};
+
+
 // 光源类型定义
 enum LightType {
     LIGHT_TYPE_1,
@@ -145,17 +158,20 @@ enum LightType {
 
 LightType currentLightType = LIGHT_TYPE_1;
 
-// 更新光源的 uniform 变量
+int currentColorIndex = 0; // 当前颜色索引
+
 void updateLightUniforms() {
     printf("switch %d ? \n", lightEnabled);
     if (lightEnabled) {
+        // 使用当前颜色索引来设置光的颜色
+        std::vector<float> currentColor = lightColors[currentColorIndex];
+        glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), currentColor[0], currentColor[1], currentColor[2]);
+
         switch (currentLightType) {
         case LIGHT_TYPE_1:
-            glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 1.0f, 1.0f, 1.0f);
             glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), 10.0f, 10.0f, 10.0f, 1.0f);
             break;
         case LIGHT_TYPE_2:
-            glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 0.5f, 0.5f, 0.5f);
             glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), -10.0f, 10.0f, 10.0f, 1.0f);
             break;
         }
@@ -165,6 +181,7 @@ void updateLightUniforms() {
         glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 0.0f, 0.0f, 0.0f);
     }
 }
+
 
 
 
@@ -1043,6 +1060,7 @@ void keypress(unsigned char key, int x, int y) {
         if (lightEnabled) {
             // 如果光源开启，切换到下一个光源类型
             currentLightType = (currentLightType == LIGHT_TYPE_1) ? LIGHT_TYPE_2 : LIGHT_TYPE_1;
+            currentColorIndex = (currentColorIndex + 1) % 6; // 切换到下一个颜色
         }
         updateLightUniforms(); // 更新光源的 uniform 变量
     }
