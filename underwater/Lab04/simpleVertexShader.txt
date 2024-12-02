@@ -1,39 +1,31 @@
 #version 330 core
 
-in vec3 vertex_position;
-in vec3 vertex_normal;
-in vec2 vertex_texcoord; // Input texture coordinates
+layout(location = 0) in vec3 vertex_position;
+layout(location = 1) in vec3 vertex_normal;
+layout(location = 2) in vec2 vertex_texcoord;
 
 out vec3 LightIntensity;
-out vec2 Texcoord; // Output texture coordinates to the fragment shader
+out vec2 Texcoord;
+out vec3 FragPos; // 传递片段位置
+out vec3 Normal;  // 传递法线
 
-uniform vec4 LightPosition = vec4(10.0, 20.0, 10.0, 1.0); // Light source position
-uniform vec3 Kd = vec3(0.0, 0.5, 0.7); // Diffuse color (blue-green underwater effect)
-uniform vec3 Ld = vec3(0.8, 0.9, 1.0); // Light intensity (slightly blue-tinted)
+uniform vec4 LightPosition;
+uniform vec3 Kd; // 漫反射颜色
+uniform vec3 Ld; // 光源强度
 
 uniform mat4 view;
 uniform mat4 proj;
 uniform mat4 model;
 
 void main() {
-    mat4 ModelViewMatrix = view * model;
-    mat3 NormalMatrix = mat3(ModelViewMatrix); // Normal matrix for correct lighting
-
-    // Calculate transformed normal and eye coordinates
-    vec3 tnorm = normalize(NormalMatrix * vertex_normal);
-    vec4 eyeCoords = ModelViewMatrix * vec4(vertex_position, 1.0);
-
-    // Light direction and attenuation
-    vec3 s = normalize(vec3(LightPosition - eyeCoords));
-    float distance = length(LightPosition.xyz - vec3(eyeCoords));
-    float attenuation = 1.0 / (1.0 + 0.02 * distance + 0.001 * distance * distance);
-
-    // Calculate light intensity with attenuation
-    LightIntensity = Ld * Kd * max(dot(s, tnorm), 0.0) * attenuation;
-
-    // Pass texture coordinates to the fragment shader
+    vec4 eyeCoords = view * model * vec4(vertex_position, 1.0);
+    vec3 lightDir = normalize(vec3(LightPosition) - eyeCoords.xyz);
+    float diff = max(dot(normalize(vertex_normal), lightDir), 0.0);
+    
+    LightIntensity = Ld * Kd * diff;
     Texcoord = vertex_texcoord;
+    FragPos = eyeCoords.xyz; // 传递片段位置
+    Normal = normalize(vertex_normal); // 传递法线
 
-    // Position in clip space
-    gl_Position = proj * view * model * vec4(vertex_position, 1.0);
+    gl_Position = proj * eyeCoords;
 }

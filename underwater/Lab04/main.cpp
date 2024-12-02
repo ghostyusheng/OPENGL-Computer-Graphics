@@ -27,6 +27,16 @@
 #include "stb_image.h"
 #include <map>
 
+GLuint sphereVAO;
+std::vector<float> vertices; // 用于存储球体的顶点数据
+
+
+
+
+float radians(float degrees) {
+    return degrees * (M_PI / 180.0f); // M_PI 是圆周率，180.0f 是度数转换为弧度的因子
+}   
+
 vec3 cameraPosition(0.0f, 0.0f, 10.0f);
 float cameraRotationY = 0.0f; // For rotation around the Y-axis
 float cameraRotationX = 0.0f; // New for vertical rotation
@@ -124,6 +134,86 @@ GLuint loc1, loc2;
 
 GLuint textureID;
 Model terrain;
+
+bool lightEnabled = true; // 光源开关状态
+
+// 光源类型定义
+enum LightType {
+    LIGHT_TYPE_1,
+    LIGHT_TYPE_2,
+};
+
+LightType currentLightType = LIGHT_TYPE_1;
+
+// 更新光源的 uniform 变量
+void updateLightUniforms() {
+    printf("switch %d ? \n", lightEnabled);
+    if (lightEnabled) {
+        switch (currentLightType) {
+        case LIGHT_TYPE_1:
+            glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 1.0f, 1.0f, 1.0f);
+            glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), 10.0f, 10.0f, 10.0f, 1.0f);
+            break;
+        case LIGHT_TYPE_2:
+            glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 0.5f, 0.5f, 0.5f);
+            glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), -10.0f, 10.0f, 10.0f, 1.0f);
+            break;
+        }
+    }
+    else {
+        // 关闭光源（将光强设置为零）
+        glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 0.0f, 0.0f, 0.0f);
+    }
+}
+
+
+
+void generateSphere(float radius, int sectors, int stacks, std::vector<float>& vertices) {
+    for (int i = 0; i <= stacks; ++i) {
+        float stackAngle = M_PI / 2 - i * M_PI / stacks; // 从π/2到-π/2
+        float xy = radius * cosf(stackAngle); // 半径投影
+        float z = radius * sinf(stackAngle); // z坐标
+
+        for (int j = 0; j <= sectors; ++j) {
+            float sectorAngle = j * 2 * M_PI / sectors; // 角度
+
+            // 计算顶点位置
+            float x = xy * cosf(sectorAngle);
+            float y = xy * sinf(sectorAngle);
+
+            vertices.push_back(x);
+            vertices.push_back(y);
+            vertices.push_back(z);
+            // 这里可以添加法线和纹理坐标
+        }
+    }
+}
+
+void initSphere() {
+    // 生成球体顶点
+    generateSphere(1.0f, 36, 18, vertices); // 半径 1.0，36 个扇区，18 个堆栈
+
+    // 创建和绑定 VAO
+    glGenVertexArrays(1, &sphereVAO);
+    glBindVertexArray(sphereVAO);
+
+    // 创建 VBO（顶点缓冲对象）
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    // 将顶点数据传输到 VBO
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+    // 设置顶点属性指针
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // 位置
+    glEnableVertexAttribArray(0);
+
+    // 解绑 VAO
+    glBindVertexArray(0);
+}
+
+
 
 GLuint loadTexture(const char* filePath) {
     GLuint textureID;
@@ -440,7 +530,7 @@ void render_fish(const FishModel& fishModel) {
         glUniform3fv(color_location, 1, &fishModel.color.v[0]);
     }
     else {
-        std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+        //std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
     }
 
     int model_location = glGetUniformLocation(shaders["model"], "model");
@@ -587,6 +677,32 @@ void display() {
 
     glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
 
+    // 在渲染循环中
+    glUseProgram(shaders["model"]);
+
+    // 设置环境光
+    // 设置环境光
+    glUniform3f(glGetUniformLocation(shaders["model"], "ambientLight"), 0.2f, 0.2f, 0.2f); // 增加环境光
+
+
+    // 设置其他材质属性
+    glUniform3f(glGetUniformLocation(shaders["model"], "Kd"), 1.0f, 0.5f, 0.31f); // 物体的漫反射颜色
+    glUniform3f(glGetUniformLocation(shaders["model"], "Ks"), 1.0f, 1.0f, 1.0f); // 镜面反射颜色
+    glUniform1f(glGetUniformLocation(shaders["model"], "Shininess"), 32.0f); // 高光强度
+
+    // 设置光源位置和强度
+    glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), 0.0f, 5.0f, 0.0f, 1.0f); // 光源在空中
+    //glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 1.0f, 1.0f, 1.0f); // 光源颜色（白色）
+    updateLightUniforms();
+        
+
+
+
+    // 绘制光球
+    glBindVertexArray(sphereVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices.size() / 3);
+
+
     for (const auto& model : models) {
         glBindVertexArray(model.vao);
 
@@ -637,7 +753,7 @@ void display() {
             }
         }
         else {
-            std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+            //std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
         }
 
 
@@ -754,8 +870,8 @@ void init() {
     loc1 = glGetAttribLocation(shaders["model"], "vertex_position");
     loc2 = glGetAttribLocation(shaders["model"], "vertex_normal");
 
-    // 加载高度图模型
-    //terrain = load_heightmap_model("heightmap.png", vec3(0.0f, -2.0f, -10.0f), 0.0f, 1.0f);
+
+    initSphere();   
 
     models.push_back(
         load_model(
@@ -872,7 +988,7 @@ void init() {
     //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
     // Initialize multiple fish models
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 2; ++i) {
         FishModel fish;
         fish = load_fish_model("assets/xxx.dae", vec3(randomFloat(-30, 15), randomFloat(-10,5), randomFloat(-10, -3)), rand() * 10 % 45, "assets/fish.png");
         fish.direction = vec3(randomFloat(1, 10), randomFloat(-4, 4), 0.0f); // Set initial swimming direction
@@ -921,6 +1037,14 @@ void keypress(unsigned char key, int x, int y) {
         cameraPosition.v[1] -= movementSpeed;
         std::cout << "Moving Down: " << cameraPosition.v[1] << std::endl;
         break;
+    case 'm':
+        // 切换光源
+        lightEnabled = !lightEnabled; // 切换光源开关状态
+        if (lightEnabled) {
+            // 如果光源开启，切换到下一个光源类型
+            currentLightType = (currentLightType == LIGHT_TYPE_1) ? LIGHT_TYPE_2 : LIGHT_TYPE_1;
+        }
+        updateLightUniforms(); // 更新光源的 uniform 变量
     }
     glutPostRedisplay(); // Request a redraw to update the display with changes
 }
@@ -928,6 +1052,7 @@ void keypress(unsigned char key, int x, int y) {
 
 void mouseButton(int button, int state, int x, int y) {
     std::cout << button << std::endl;
+
     if (button == GLUT_LEFT_BUTTON) {
         leftMousePressed = (state == GLUT_DOWN);
         lastMouseX = x;
@@ -942,6 +1067,7 @@ void mouseButton(int button, int state, int x, int y) {
         if (cameraDistance > 50.0f) cameraDistance = 50.0f; // Limit zoom-out distance
     }
 }
+
 
 void mouseMotion(int x, int y) {
     if (leftMousePressed) {
