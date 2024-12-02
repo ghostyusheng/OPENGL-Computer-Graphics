@@ -136,6 +136,7 @@ GLuint textureID;
 Model terrain;
 
 bool lightEnabled = true; // 光源开关状态
+bool useOriginShader = true;
 
 #include <vector>
 
@@ -711,6 +712,7 @@ void display() {
     glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), 0.0f, 5.0f, 0.0f, 1.0f); // 光源在空中
     //glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 1.0f, 1.0f, 1.0f); // 光源颜色（白色）
     updateLightUniforms();
+    glUniform1i(glGetUniformLocation(shaders["model"], "useOriginShader"), useOriginShader); // 光源在空中
         
 
 
@@ -1063,6 +1065,8 @@ void keypress(unsigned char key, int x, int y) {
             currentColorIndex = (currentColorIndex + 1) % 6; // 切换到下一个颜色
         }
         updateLightUniforms(); // 更新光源的 uniform 变量
+    case 'n':
+        useOriginShader = !useOriginShader;
     }
     glutPostRedisplay(); // Request a redraw to update the display with changes
 }
