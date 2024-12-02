@@ -19,6 +19,7 @@ void Render::renderModel(Model& model) {
     // …Ë÷√ƒ£–Õæÿ’Û
     mat4 modelMatrix = identity_mat4();
     modelMatrix = translate(modelMatrix, model.position);
+    modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
     int matrix_location = glGetUniformLocation(shaderProgram, "model");
     glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
 
@@ -98,12 +99,20 @@ void Render::initModel() {
             nullptr, 1)
     );
 
+    //objs.push_back(
+    //    Mesh::load_model(
+    //        "terrain1.obj",
+    //        vec3(0.0f, -12.0f, -10.0f),
+    //        30.0f,
+    //        "assets/stone2.jpg", 8)
+    //);
+
     objs.push_back(
         Mesh::load_model(
-            "terrain1.obj",
+            "assets/new/dizuo.dae",
             vec3(0.0f, -12.0f, -10.0f),
-            30.0f,
-            "assets/stone2.jpg", 8)
+            215.0f,
+            nullptr, 1)
     );
 }
 

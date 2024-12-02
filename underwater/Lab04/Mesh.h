@@ -23,8 +23,8 @@ typedef struct {
 
 // 定义模型结构
 struct Model {
-    string name;
     ModelData data;
+    string name;
     vec3 position;
     float rotationY;
     GLuint vao; // 该模型的 VAO

@@ -7,6 +7,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Shader.h"
+#include "Log.h"
+#include "global.h"
 
 // 加载 OBJ 格式的网格
 ModelData Mesh::load_obj_mesh(const char* file_name) {
@@ -56,6 +58,7 @@ ModelData Mesh::load_mesh(const char* file_name) {
     }
 
     for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
+        Log::log(Log::Level::INFO, Str("{} -> loading mesh {}", file_name, m_i));
         const aiMesh* mesh = scene->mMeshes[m_i];
         modelData.mPointCount += mesh->mNumVertices;
 
