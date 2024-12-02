@@ -125,49 +125,6 @@ GLuint loc1, loc2;
 GLuint textureID;
 Model terrain;
 
-class Particle {
-public:
-    vec3 position;
-    vec3 velocity;
-    float lifetime;
-    float size;    // 水泡大小
-    float alpha;   // 水泡透明度
-
-    // 确保构造函数接受5个参数
-    Particle(vec3 pos, vec3 vel, float life, float size, float alpha)
-        : position(pos), velocity(vel), lifetime(life), size(size), alpha(alpha) {}
-};
-
-class ParticleSystem {
-private:
-    std::vector<Particle> particles;
-
-public:
-    void update(float deltaTime) {
-        for (auto& particle : particles) {
-            particle.position += particle.velocity * deltaTime;
-            particle.lifetime -= deltaTime;
-        }
-        // 移除生命周期结束的粒子
-        particles.erase(std::remove_if(particles.begin(), particles.end(),
-            [](const Particle& p) { return p.lifetime <= 0; }), particles.end());
-    }
-
-    void addParticle(vec3 position, vec3 velocity, float lifetime) {
-        float size = static_cast<float>(rand() % 5 + 2); // 随机大小
-        float alpha = 0.5f; // 固定透明度
-        // 确保这里传递5个参数
-        particles.emplace_back(position, velocity, lifetime, size, alpha);
-    }
-
-    const std::vector<Particle>& getParticles() const {
-        return particles;
-    }
-};
-
-ParticleSystem particleSystem;
-
-
 GLuint loadTexture(const char* filePath) {
     GLuint textureID;
     glGenTextures(1, &textureID);
@@ -202,79 +159,6 @@ GLuint loadTexture(const char* filePath) {
 }
 
 int  channels;
-
-ModelData load_heightmap(const char* file_name, float heightScale) {
-    int width = 100;
-    int height = 100;
-    ModelData modelData;
-    unsigned char* heightMap = stbi_load(file_name, &width, &height, &channels, 0);
-
-    if (!heightMap) {
-        std::cerr << "Failed to load heightmap: " << file_name << std::endl;
-        return modelData;
-    }
-
-    modelData.mPointCount = width * height;
-
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            // 计算高度
-            float heightValue = heightMap[y * width + x] / 255.0f * heightScale;
-
-            // 添加顶点
-            modelData.mVertices.push_back(vec3(x, heightValue, y));
-            modelData.mNormals.push_back(vec3(0.0f, 1.0f, 0.0f)); // 简单法线
-            modelData.mTextureCoords.push_back(vec2((float)x / (width - 1), (float)y / (height - 1)));
-        }
-    }
-
-    stbi_image_free(heightMap);
-    return modelData;
-}
-
-Model load_heightmap_model(const char* heightmapFile, vec3 position, float rotationY, float heightScale) {
-    Model model;
-    model.data = load_heightmap(heightmapFile, heightScale);
-    model.position = position;
-    model.rotationY = rotationY;
-    model.hasTexture = false;
-
-    // 创建 VAO 和 VBOs
-    glGenVertexArrays(1, &model.vao);
-    glBindVertexArray(model.vao);
-
-    GLuint vp_vbo, vn_vbo, vt_vbo;
-    glGenBuffers(1, &vp_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mVertices[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &vn_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mNormals[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &vt_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
-
-    // 设置顶点属性
-    glEnableVertexAttribArray(loc1);
-    glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-    glVertexAttribPointer(loc1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    glEnableVertexAttribArray(loc2);
-    glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-    glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    GLint loc3 = glGetAttribLocation(shaders["model"], "vertex_texcoord");
-    glEnableVertexAttribArray(loc3);
-    glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-    glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    glBindVertexArray(0);
-    return model;
-}
-
-
 
 
 #pragma region MESH LOADING
@@ -790,25 +674,6 @@ void display() {
     view = translate(view, vec3(0.0f, 0.0f, -5.0f)); // 适当设置相机位置
     glUniformMatrix4fv(glGetUniformLocation(shaders["simple"], "view"), 1, GL_FALSE, view2.m);
 
-    const auto& particles = particleSystem.getParticles();
-
-    if (particles.empty()) {
-        std::cout << "No particles to draw!" << std::endl;
-    }
-    // 绘制粒子
-    for (const auto& particle : particles) {
-        // 设置粒子的位置
-        glUniform3f(glGetUniformLocation(shaders["simple"], "position"),
-            particle.position.v[0],
-            particle.position.v[1],
-            particle.position.v[2]);
-
-        // 绘制粒子（使用点）
-        glBegin(GL_POINTS);
-        glVertex3f(particle.position.v[0], particle.position.v[1], particle.position.v[2]);
-        glEnd();
-    }
-
     glutSwapBuffers();
 }
 
@@ -878,30 +743,9 @@ void updateScene() {
         }
     }
 
-    // 更新粒子系统
-    particleSystem.update(0.016f);
-    // 检查粒子数量，如果没有粒子，则添加新的粒子
-    if (particleSystem.getParticles().empty()) {
-        for (int i = 0; i < 100; ++i) {
-            particleSystem.addParticle(
-                vec3(rand() % 10 - 5, rand() % 10 - 5, -10), // 随机位置
-                vec3(0.0f, 0.0f, 0.1f), // 向上移动
-                5.0f // 粒子生命周期
-            );
-        }
-    }
 
     glutPostRedisplay(); // Request a redraw to update the display
 }
-
-void timer(int value) {
-    float deltaTime = 0.016f; // 示例，实际应根据时间计算
-    updateScene(); // 更新场景
-    display(); // 绘制场景
-    glutTimerFunc(16, timer, 0); // 每16毫秒调用一次
-}
-
-
 
 void init() {
     CompileShaders("model", "simpleVertexShader.txt", "simpleFragmentShader.txt");
@@ -1035,13 +879,6 @@ void init() {
         fishModels.push_back(fish);
     }
 
-    for (int i = 0; i < 100; ++i) {
-        particleSystem.addParticle(
-            vec3(rand() % 10 - 5, rand() % 10 - 5, -10), // 随机位置
-            vec3(0.0f, 0.0f, 0.1f), // 向上移动
-            5000.0f // 粒子生命周期
-        );
-    }
 }
 
 
@@ -1145,7 +982,6 @@ int main(int argc, char** argv) {
 
     // 注册显示和定时器函数
     glutDisplayFunc(display);
-    glutTimerFunc(0, timer, 0); // 启动定时器
 
     glutMainLoop();
     return 0;
