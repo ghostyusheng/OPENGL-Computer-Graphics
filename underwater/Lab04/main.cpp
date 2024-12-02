@@ -1,4 +1,4 @@
-// Windows includes (For Time, IO, etc.)
+ï»¿// Windows includes (For Time, IO, etc.)
 #include <windows.h>
 #include <mmsystem.h>
 #include <iostream>
@@ -28,14 +28,14 @@
 #include <map>
 
 GLuint sphereVAO;
-std::vector<float> vertices; // ÓÃÓÚ´æ´¢ÇòÌåµÄ¶¥µãÊý¾Ý
+std::vector<float> vertices; // ï¿½ï¿½ï¿½Ú´æ´¢ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 
 
 float radians(float degrees) {
-    return degrees * (M_PI / 180.0f); // M_PI ÊÇÔ²ÖÜÂÊ£¬180.0f ÊÇ¶ÈÊý×ª»»Îª»¡¶ÈµÄÒò×Ó
-}   
+	return degrees * (M_PI / 180.0f); // M_PI ï¿½ï¿½Ô²ï¿½ï¿½ï¿½Ê£ï¿½180.0f ï¿½Ç¶ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½ï¿½Èµï¿½ï¿½ï¿½ï¿½ï¿½
+}
 
 vec3 cameraPosition(0.0f, 0.0f, 10.0f);
 float cameraRotationY = 0.0f; // For rotation around the Y-axis
@@ -50,14 +50,14 @@ float traceSpeed = 0.5f;   // Speed of the fish movement
 float angle = 0.0f;        // Angle along the path
 static float finAngle = 0.0f; // Declare finAngle as static/global
 
-float squidSpeed = 0.5f; // öÏÓãÒÆ¶¯ËÙ¶È
-float sharkSpeed = 1.8f; // öèÓãÒÆ¶¯ËÙ¶È
-float seahorseDirection = 1.0f; // öÏÓã·½Ïò£¨1:ÏòÉÏ£¬-1:ÏòÏÂ£©
-float sharkDirectionX = 1.0f; // öèÓãË®Æ½ÒÆ¶¯·½Ïò
+float squidSpeed = 0.5f; // ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½Ù¶ï¿½
+float sharkSpeed = 1.8f; // ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½Ù¶ï¿½
+float seahorseDirection = 1.0f; // ï¿½ï¿½ï¿½ã·½ï¿½ï¿½1:ï¿½ï¿½ï¿½Ï£ï¿½-1:ï¿½ï¿½ï¿½Â£ï¿½
+float sharkDirectionX = 1.0f; // ï¿½ï¿½ï¿½ï¿½Ë®Æ½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 float sharkRotationY = 0.0f;
-float squidDirectionX = 1.1f; // öèÓãË®Æ½ÒÆ¶¯·½Ïò
+float squidDirectionX = 1.1f; // ï¿½ï¿½ï¿½ï¿½Ë®Æ½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 
-float aincradRotationX = 0.0f; // ÓÃÓÚ´æ´¢aincrad.daeµÄÐý×ª½Ç¶È
+float aincradRotationX = 0.0f; // ï¿½ï¿½ï¿½Ú´æ´¢aincrad.daeï¿½ï¿½ï¿½ï¿½×ªï¿½Ç¶ï¿½
 
 
 
@@ -65,13 +65,13 @@ float aincradRotationX = 0.0f; // ÓÃÓÚ´æ´¢aincrad.daeµÄÐý×ª½Ç¶È
 static std::default_random_engine e;
 
 float randomFloat(float min, float max) {
-    // È·±£ min Ð¡ÓÚ max
-    if (min > max) {
-        std::swap(min, max);
-    }
-    // Éú³ÉËæ»ú¸¡µãÊý
-    float scale = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); // [0, 1]
-    return min + scale * (max - min); // [min, max]
+	// È·ï¿½ï¿½ min Ð¡ï¿½ï¿½ max
+	if (min > max) {
+		std::swap(min, max);
+	}
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	float scale = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); // [0, 1]
+	return min + scale * (max - min); // [min, max]
 }
 
 /*----------------------------------------------------------------------------
@@ -84,39 +84,39 @@ MESH TO LOAD
 
 #pragma region SimpleTypes
 typedef struct {
-    size_t mPointCount = 0;
-    std::vector<vec3> mVertices;
-    std::vector<vec3> mNormals;
-    std::vector<vec2> mTextureCoords;
-    vec3 diffuseColor = vec3(1.0f, 1.0f, 1.0f); // Default color (white)
-    bool hasColor = false; // Indicates if a color is defined
+	size_t mPointCount = 0;
+	std::vector<vec3> mVertices;
+	std::vector<vec3> mNormals;
+	std::vector<vec2> mTextureCoords;
+	vec3 diffuseColor = vec3(1.0f, 1.0f, 1.0f); // Default color (white)
+	bool hasColor = false; // Indicates if a color is defined
 } ModelData;
 
 struct Model {
-    std::string name;
-    ModelData data;
-    vec3 position;
-    float rotationY;
-    GLuint vao; // VAO for this specific model
-    GLuint textureID;
-    bool hasTexture; // ÐÂÔöµÄ²¼¶ûÖµ£¬ÓÃÓÚÖ¸Ê¾ÊÇ·ñÓÐÎÆÀí
+	std::string name;
+	ModelData data;
+	vec3 position;
+	float rotationY;
+	GLuint vao; // VAO for this specific model
+	GLuint textureID;
+	bool hasTexture; // ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸Ê¾ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
 struct ModelPart {
-    ModelData data;
-    GLuint vao;
+	ModelData data;
+	GLuint vao;
 };
 
 struct FishModel {
-    ModelPart body;
-    ModelPart fin;
-    vec3 position;
-    float rotationY;
-    vec3 direction; // New attribute for swimming direction
-    float finAngle;
-    bool hasTexture;
-    GLuint textureID;
-    vec3 color; // Add color attribute
+	ModelPart body;
+	ModelPart fin;
+	vec3 position;
+	float rotationY;
+	vec3 direction; // New attribute for swimming direction
+	float finAngle;
+	bool hasTexture;
+	GLuint textureID;
+	vec3 color; // Add color attribute
 };
 
 std::vector<Model> models; // Vector to hold multiple models
@@ -135,135 +135,135 @@ GLuint loc1, loc2;
 GLuint textureID;
 Model terrain;
 
-bool lightEnabled = true; // ¹âÔ´¿ª¹Ø×´Ì¬
+bool lightEnabled = true; // ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½×´Ì¬
 bool useOriginShader = true;
 
 #include <vector>
 
-// ¶¨ÒåÁùÖÖÑÕÉ«
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
 std::vector<float> lightColors[6] = {
-    {1.0f, 0.0f, 0.0f}, // ºìÉ«
-    {0.0f, 1.0f, 0.0f}, // ÂÌÉ«
-    {0.0f, 0.0f, 1.0f}, // À¶É«
-    {1.0f, 1.0f, 0.0f}, // »ÆÉ«
-    {1.0f, 0.0f, 1.0f}, // Æ·ºì
-    {0.0f, 1.0f, 1.0f}  // ÇàÉ«
+{1.0f, 0.0f, 0.0f}, // ï¿½ï¿½É«
+{0.0f, 1.0f, 0.0f}, // ï¿½ï¿½É«
+{0.0f, 0.0f, 1.0f}, // ï¿½ï¿½É«
+{1.0f, 1.0f, 0.0f}, // ï¿½ï¿½É«
+{1.0f, 0.0f, 1.0f}, // Æ·ï¿½ï¿½
+{0.0f, 1.0f, 1.0f}  // ï¿½ï¿½É«
 };
 
 
-// ¹âÔ´ÀàÐÍ¶¨Òå
+// ï¿½ï¿½Ô´ï¿½ï¿½ï¿½Í¶ï¿½ï¿½ï¿½
 enum LightType {
-    LIGHT_TYPE_1,
-    LIGHT_TYPE_2,
+	LIGHT_TYPE_1,
+	LIGHT_TYPE_2,
 };
 
 LightType currentLightType = LIGHT_TYPE_1;
 
-int currentColorIndex = 0; // µ±Ç°ÑÕÉ«Ë÷Òý
+int currentColorIndex = 0; // ï¿½ï¿½Ç°ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½
 
 void updateLightUniforms() {
-    printf("switch %d ? \n", lightEnabled);
-    if (lightEnabled) {
-        // Ê¹ÓÃµ±Ç°ÑÕÉ«Ë÷ÒýÀ´ÉèÖÃ¹âµÄÑÕÉ«
-        std::vector<float> currentColor = lightColors[currentColorIndex];
-        glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), currentColor[0], currentColor[1], currentColor[2]);
+	printf("switch %d ? \n", lightEnabled);
+	if (lightEnabled) {
+		// Ê¹ï¿½Ãµï¿½Ç°ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½ï¿½É«
+		std::vector<float> currentColor = lightColors[currentColorIndex];
+		glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), currentColor[0], currentColor[1], currentColor[2]);
 
-        switch (currentLightType) {
-        case LIGHT_TYPE_1:
-            glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), 10.0f, 10.0f, 10.0f, 1.0f);
-            break;
-        case LIGHT_TYPE_2:
-            glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), -10.0f, 10.0f, 10.0f, 1.0f);
-            break;
-        }
-    }
-    else {
-        // ¹Ø±Õ¹âÔ´£¨½«¹âÇ¿ÉèÖÃÎªÁã£©
-        glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 0.0f, 0.0f, 0.0f);
-    }
+		switch (currentLightType) {
+		case LIGHT_TYPE_1:
+			glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), 10.0f, 10.0f, 10.0f, 1.0f);
+			break;
+		case LIGHT_TYPE_2:
+			glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), -10.0f, 10.0f, 10.0f, 1.0f);
+			break;
+		}
+	}
+	else {
+		// ï¿½Ø±Õ¹ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½Îªï¿½ã£©
+		glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 0.0f, 0.0f, 0.0f);
+	}
 }
 
 
 
 
 void generateSphere(float radius, int sectors, int stacks, std::vector<float>& vertices) {
-    for (int i = 0; i <= stacks; ++i) {
-        float stackAngle = M_PI / 2 - i * M_PI / stacks; // ´Ó¦Ð/2µ½-¦Ð/2
-        float xy = radius * cosf(stackAngle); // °ë¾¶Í¶Ó°
-        float z = radius * sinf(stackAngle); // z×ø±ê
+	for (int i = 0; i <= stacks; ++i) {
+		float stackAngle = M_PI / 2 - i * M_PI / stacks; // ï¿½Ó¦ï¿½/2ï¿½ï¿½-ï¿½ï¿½/2
+		float xy = radius * cosf(stackAngle); // ï¿½ë¾¶Í¶Ó°
+		float z = radius * sinf(stackAngle); // zï¿½ï¿½ï¿½ï¿½
 
-        for (int j = 0; j <= sectors; ++j) {
-            float sectorAngle = j * 2 * M_PI / sectors; // ½Ç¶È
+		for (int j = 0; j <= sectors; ++j) {
+			float sectorAngle = j * 2 * M_PI / sectors; // ï¿½Ç¶ï¿½
 
-            // ¼ÆËã¶¥µãÎ»ÖÃ
-            float x = xy * cosf(sectorAngle);
-            float y = xy * sinf(sectorAngle);
+			// ï¿½ï¿½ï¿½ã¶¥ï¿½ï¿½Î»ï¿½ï¿½
+			float x = xy * cosf(sectorAngle);
+			float y = xy * sinf(sectorAngle);
 
-            vertices.push_back(x);
-            vertices.push_back(y);
-            vertices.push_back(z);
-            // ÕâÀï¿ÉÒÔÌí¼Ó·¨ÏßºÍÎÆÀí×ø±ê
-        }
-    }
+			vertices.push_back(x);
+			vertices.push_back(y);
+			vertices.push_back(z);
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó·ï¿½ï¿½ßºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		}
+	}
 }
 
 void initSphere() {
-    // Éú³ÉÇòÌå¶¥µã
-    generateSphere(1.0f, 36, 18, vertices); // °ë¾¶ 1.0£¬36 ¸öÉÈÇø£¬18 ¸ö¶ÑÕ»
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å¶¥ï¿½ï¿½
+	generateSphere(1.0f, 36, 18, vertices); // ï¿½ë¾¶ 1.0ï¿½ï¿½36 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½18 ï¿½ï¿½ï¿½ï¿½Õ»
 
-    // ´´½¨ºÍ°ó¶¨ VAO
-    glGenVertexArrays(1, &sphereVAO);
-    glBindVertexArray(sphereVAO);
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ VAO
+	glGenVertexArrays(1, &sphereVAO);
+	glBindVertexArray(sphereVAO);
 
-    // ´´½¨ VBO£¨¶¥µã»º³å¶ÔÏó£©
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ï¿½ï¿½ï¿½ã»ºï¿½ï¿½ï¿½ï¿½ï¿½
+	GLuint VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    // ½«¶¥µãÊý¾Ý´«Êäµ½ VBO
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý´ï¿½ï¿½äµ½ VBO
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
-    // ÉèÖÃ¶¥µãÊôÐÔÖ¸Õë
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // Î»ÖÃ
-    glEnableVertexAttribArray(0);
+	// ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // Î»ï¿½ï¿½
+	glEnableVertexAttribArray(0);
 
-    // ½â°ó VAO
-    glBindVertexArray(0);
+	// ï¿½ï¿½ï¿½ VAO
+	glBindVertexArray(0);
 }
 
 
 
 GLuint loadTexture(const char* filePath) {
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 
-    // ÉèÖÃÎÆÀí»·ÈÆ·½Ê½ºÍ¹ýÂË·½Ê½
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½Ê½ï¿½Í¹ï¿½ï¿½Ë·ï¿½Ê½
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // ¼ÓÔØÎÆÀíÊý¾Ý
-    int width, height, channels;
-    unsigned char* data = stbi_load(filePath, &width, &height, &channels, 0);
-    if (data) {
-        GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	int width, height, channels;
+	unsigned char* data = stbi_load(filePath, &width, &height, &channels, 0);
+	if (data) {
+		GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
 
-        // ½«ÎÆÀíÊý¾ÝÉÏ´«µ½ OpenGL
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ OpenGL
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
 
-        std::cout << "Texture loaded: " << filePath << " (" << width << "x" << height << ")" << std::endl;
-        stbi_image_free(data);
-    }
-    else {
-        std::cerr << "Failed to load texture: " << filePath << std::endl;
-        stbi_image_free(data);
-        return 0;
-    }
+		std::cout << "Texture loaded: " << filePath << " (" << width << "x" << height << ")" << std::endl;
+		stbi_image_free(data);
+	}
+	else {
+		std::cerr << "Failed to load texture: " << filePath << std::endl;
+		stbi_image_free(data);
+		return 0;
+	}
 
-    return textureID;
+	return textureID;
 }
 
 int  channels;
@@ -271,866 +271,867 @@ int  channels;
 
 #pragma region MESH LOADING
 ModelData load_obj_mesh(const char* file_name) {
-    ModelData modelData;
+	ModelData modelData;
 
-    const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
-    if (!scene) {
-        fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
-        return modelData;
-    }
+	const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
+	if (!scene) {
+		fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
+		return modelData;
+	}
 
-    for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
-        const aiMesh* mesh = scene->mMeshes[m_i];
-        modelData.mPointCount += mesh->mNumVertices;
-        for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
-            if (mesh->HasPositions()) {
-                const aiVector3D* vp = &(mesh->mVertices[v_i]);
-                modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
-            }
-            if (mesh->HasNormals()) {
-                const aiVector3D* vn = &(mesh->mNormals[v_i]);
-                modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
-            }
-            if (mesh->HasTextureCoords(0)) {
-                const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
-                modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
-            }
+	for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
+		const aiMesh* mesh = scene->mMeshes[m_i];
+		modelData.mPointCount += mesh->mNumVertices;
+		for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
+			if (mesh->HasPositions()) {
+				const aiVector3D* vp = &(mesh->mVertices[v_i]);
+				modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
+			}
+			if (mesh->HasNormals()) {
+				const aiVector3D* vn = &(mesh->mNormals[v_i]);
+				modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
+			}
+			if (mesh->HasTextureCoords(0)) {
+				const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
+				modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
+			}
 
 
-        }
-    }
+		}
+	}
 
-    aiReleaseImport(scene);
-    return modelData;
+	aiReleaseImport(scene);
+	return modelData;
 }
 
 
 ModelData load_mesh(const char* file_name) {
-    ModelData modelData;
+	ModelData modelData;
 
-    const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
-    if (!scene) {
-        fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
-        return modelData;
-    }
-    else {
-        printf("=> loaded: %s \n ", file_name);
-    }
+	const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
+	if (!scene) {
+		fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
+		return modelData;
+	}
+	else {
+		printf("=> loaded: %s \n ", file_name);
+	}
 
-    for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
-        const aiMesh* mesh = scene->mMeshes[m_i];
-        modelData.mPointCount += mesh->mNumVertices;
-        for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
-            if (mesh->HasPositions()) {
-                const aiVector3D* vp = &(mesh->mVertices[v_i]);
-                modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
-            }
-            if (mesh->HasNormals()) {
-                const aiVector3D* vn = &(mesh->mNormals[v_i]);
-                modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
-            }
-            if (mesh->HasTextureCoords(0)) {
-                const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
-                modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
-            }
+	for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
+		const aiMesh* mesh = scene->mMeshes[m_i];
+		modelData.mPointCount += mesh->mNumVertices;
+		for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
+			if (mesh->HasPositions()) {
+				const aiVector3D* vp = &(mesh->mVertices[v_i]);
+				modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
+			}
+			if (mesh->HasNormals()) {
+				const aiVector3D* vn = &(mesh->mNormals[v_i]);
+				modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
+			}
+			if (mesh->HasTextureCoords(0)) {
+				const aiVector3D* vt = &(mesh->mTextureCoords[0][v_i]);
+				modelData.mTextureCoords.push_back(vec2(vt->x, vt->y));
+			}
 
-            // Load the diffuse color if no texture coordinates are available
-            if (scene->mMaterials[mesh->mMaterialIndex]) {
-                //std::cout << "material color: " << std::endl;
-                aiColor4D diffuse;
-                if (AI_SUCCESS == aiGetMaterialColor(scene->mMaterials[mesh->mMaterialIndex], AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
-                    modelData.diffuseColor = vec3(diffuse.r, diffuse.g, diffuse.b);
-                    //print(vec3(diffuse.r, diffuse.g, diffuse.b));
-                    modelData.hasColor = true; // Set flag to indicate the presence of color
-                }
-            }
-        }
-    }
+			// Load the diffuse color if no texture coordinates are available
+			if (scene->mMaterials[mesh->mMaterialIndex]) {
+				//std::cout << "material color: " << std::endl;
+				aiColor4D diffuse;
+				if (AI_SUCCESS == aiGetMaterialColor(scene->mMaterials[mesh->mMaterialIndex], AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
+					modelData.diffuseColor = vec3(diffuse.r, diffuse.g, diffuse.b);
+					//print(vec3(diffuse.r, diffuse.g, diffuse.b));
+					modelData.hasColor = true; // Set flag to indicate the presence of color
+				}
+			}
+		}
+	}
 
-    printf("=> count : %d \n", modelData.mPointCount);
+	printf("=> count : %d \n", modelData.mPointCount);
 
-    aiReleaseImport(scene);
-    return modelData;
+	aiReleaseImport(scene);
+	return modelData;
 }
 
 Model load_model(const char* file_name, vec3 position, float rotationY, const char* textureFile, int scale) {
-    Model model;
-    std::string str;
-    str = file_name;
-    model.name = str;
+	Model model;
+	std::string str;
+	str = file_name;
+	model.name = str;
 
-    // Check file extension
-    std::string fileStr(file_name);
-    if (fileStr.substr(fileStr.find_last_of(".") + 1) == "obj") {
-        model.data = load_obj_mesh(file_name);
-    }
-    else {
-        model.data = load_mesh(file_name); // ÏÖÓÐµÄ DAE ¼ÓÔØ
-    }
+	// Check file extension
+	std::string fileStr(file_name);
+	if (fileStr.substr(fileStr.find_last_of(".") + 1) == "obj") {
+		model.data = load_obj_mesh(file_name);
+	}
+	else {
+		model.data = load_mesh(file_name); // ï¿½ï¿½ï¿½Ðµï¿½ DAE ï¿½ï¿½ï¿½ï¿½
+	}
 
-    model.position = position;
-    model.rotationY = rotationY;
-    model.hasTexture = false;
+	model.position = position;
+	model.rotationY = rotationY;
+	model.hasTexture = false;
 
-    if (textureFile != nullptr && strlen(textureFile) > 0) {
-        model.textureID = loadTexture(textureFile);
-        model.hasTexture = true;
-    }
+	if (textureFile != nullptr && strlen(textureFile) > 0) {
+		model.textureID = loadTexture(textureFile);
+		model.hasTexture = true;
+	}
 
-    // Éú³ÉºÍ°ó¶¨ VAO
-    glGenVertexArrays(1, &model.vao);
-    glBindVertexArray(model.vao);
+	// ï¿½ï¿½ï¿½ÉºÍ°ï¿½ VAO
+	glGenVertexArrays(1, &model.vao);
+	glBindVertexArray(model.vao);
 
-    // Éú³É VBOs
-    GLuint vp_vbo, vn_vbo;
-    glGenBuffers(1, &vp_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mVertices[0], GL_STATIC_DRAW);
+	// ï¿½ï¿½ï¿½ï¿½ VBOs
+	GLuint vp_vbo, vn_vbo;
+	glGenBuffers(1, &vp_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
+	glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mVertices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vn_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mNormals[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &vn_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
+	glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec3), &model.data.mNormals[0], GL_STATIC_DRAW);
 
-    // Á´½Ó¶¥µãÎ»ÖÃ
-    glEnableVertexAttribArray(loc1);
-    glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-    glVertexAttribPointer(loc1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	// ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+	glEnableVertexAttribArray(loc1);
+	glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
+	glVertexAttribPointer(loc1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    // Á´½Ó¶¥µã·¨Ïß
-    glEnableVertexAttribArray(loc2);
-    glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-    glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	// ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ã·¨ï¿½ï¿½
+	glEnableVertexAttribArray(loc2);
+	glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
+	glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    if (!model.data.mTextureCoords.empty()) {
-        // Ëõ·ÅÎÆÀí×ø±êÒÔÊµÏÖÎÆÀíÖØ¸´
-        for (auto& texCoord : model.data.mTextureCoords) {
-            texCoord.v[0] *= scale;  // ½«´ËÖµÉèÎªÄãÏëÒªµÄÖØ¸´±¶Êý
-            texCoord.v[1] *= scale;
-        }
+	if (!model.data.mTextureCoords.empty()) {
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½
+		for (auto& texCoord : model.data.mTextureCoords) {
+			texCoord.v[0] *= scale;  // ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½
+			texCoord.v[1] *= scale;
+		}
 
-        GLuint vt_vbo;
-        glGenBuffers(1, &vt_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-        glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
-        GLint loc3 = glGetAttribLocation(shaders["model"], "vertex_texcoord");
-        glEnableVertexAttribArray(loc3);
-        glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-    }
+		GLuint vt_vbo;
+		glGenBuffers(1, &vt_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
+		glBufferData(GL_ARRAY_BUFFER, model.data.mPointCount * sizeof(vec2), &model.data.mTextureCoords[0], GL_STATIC_DRAW);
+		GLint loc3 = glGetAttribLocation(shaders["model"], "vertex_texcoord");
+		glEnableVertexAttribArray(loc3);
+		glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+	}
 
-    glBindVertexArray(0); // Íê³ÉÉèÖÃºó½â°ó VAO
+	glBindVertexArray(0); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½ VAO
 
-    return model;
+	return model;
 }
 
 
 FishModel load_fish_model(const char* file_name, vec3 position, float rotationY, const char* textureFile) {
-    FishModel fishModel;
-    fishModel.position = position;
-    fishModel.rotationY = rotationY;
+	FishModel fishModel;
+	fishModel.position = position;
+	fishModel.rotationY = rotationY;
 
-    // Generate a random color
-    fishModel.color = vec3(randomFloat(0, 255) / 255.0f, randomFloat(0, 255) / 255.0f, randomFloat(0, 255) / 255.0f);
-    // Debug output to check color
-    std::cout << "Fish Color: (" << fishModel.color.v[0] << ", " << fishModel.color.v[1] << ", " << fishModel.color.v[2] << ")\n";
+	// Generate a random color
+	fishModel.color = vec3(randomFloat(0, 255) / 255.0f, randomFloat(0, 255) / 255.0f, randomFloat(0, 255) / 255.0f);
+	// Debug output to check color
+	std::cout << "Fish Color: (" << fishModel.color.v[0] << ", " << fishModel.color.v[1] << ", " << fishModel.color.v[2] << ")\n";
 
-    fishModel.hasTexture = false;
+	fishModel.hasTexture = false;
 
-    if (textureFile != nullptr && strlen(textureFile) > 0) {
-        fishModel.textureID = loadTexture(textureFile);
-        fishModel.hasTexture = true;
-    }
+	if (textureFile != nullptr && strlen(textureFile) > 0) {
+		fishModel.textureID = loadTexture(textureFile);
+		fishModel.hasTexture = true;
+	}
 
-    const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
-    if (!scene) {
-        fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
-        return fishModel;
-    }
-    else {
-        fprintf(stderr, "Success: reading mesh %s\n", file_name);
-    }
+	const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate | aiProcess_PreTransformVertices);
+	if (!scene) {
+		fprintf(stderr, "ERROR: reading mesh %s\n", file_name);
+		return fishModel;
+	}
+	else {
+		fprintf(stderr, "Success: reading mesh %s\n", file_name);
+	}
 
-    std::cout << "Mesh count: " << scene->mNumMeshes << std::endl;
-    printf("-> loaded fish texture? %d \n", fishModel.hasTexture);
+	std::cout << "Mesh count: " << scene->mNumMeshes << std::endl;
+	printf("-> loaded fish texture? %d \n", fishModel.hasTexture);
 
-    // Iterate through each mesh in the scene
-    for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
-        const aiMesh* mesh = scene->mMeshes[m_i];
+	// Iterate through each mesh in the scene
+	for (unsigned int m_i = 0; m_i < scene->mNumMeshes; m_i++) {
+		const aiMesh* mesh = scene->mMeshes[m_i];
 
-        ModelData modelData;
-        modelData.mPointCount = mesh->mNumVertices;
+		ModelData modelData;
+		modelData.mPointCount = mesh->mNumVertices;
 
-        // Populate vertex and normal data
-        for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
-            if (mesh->HasPositions()) {
-                const aiVector3D* vp = &(mesh->mVertices[v_i]);
-                modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
-            }
-            if (mesh->HasNormals()) {
-                const aiVector3D* vn = &(mesh->mNormals[v_i]);
-                modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
-            }
-        }
+		// Populate vertex and normal data
+		for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
+			if (mesh->HasPositions()) {
+				const aiVector3D* vp = &(mesh->mVertices[v_i]);
+				modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
+			}
+			if (mesh->HasNormals()) {
+				const aiVector3D* vn = &(mesh->mNormals[v_i]);
+				modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
+			}
+		}
 
-        // Debug output for mesh information
-        std::cout << "Mesh Index: " << m_i << ", Vertex Count: " << mesh->mNumVertices << std::endl;
+		// Debug output for mesh information
+		std::cout << "Mesh Index: " << m_i << ", Vertex Count: " << mesh->mNumVertices << std::endl;
 
-        ModelPart* part = nullptr;
+		ModelPart* part = nullptr;
 
-        // Assign part based on mesh index
-        if (m_i == 0) { // Assuming the first mesh is the body
-            part = &fishModel.body;
-        }
-        else if (m_i == 1) { // Assuming the second mesh is the fin
-            printf("---> Fin part found! \n");
-            part = &fishModel.fin;
-        }
+		// Assign part based on mesh index
+		if (m_i == 0) { // Assuming the first mesh is the body
+			part = &fishModel.body;
+		}
+		else if (m_i == 1) { // Assuming the second mesh is the fin
+			printf("---> Fin part found! \n");
+			part = &fishModel.fin;
+		}
 
-        // Debug output for part assignment
-        std::cout << "Part Pointer: " << part << std::endl;
+		// Debug output for part assignment
+		std::cout << "Part Pointer: " << part << std::endl;
 
-        if (part) {
-            part->data = modelData;
+		if (part) {
+			part->data = modelData;
 
-            // Create VAO and VBOs for the mesh part
-            glGenVertexArrays(1, &part->vao);
-            glBindVertexArray(part->vao);
+			// Create VAO and VBOs for the mesh part
+			glGenVertexArrays(1, &part->vao);
+			glBindVertexArray(part->vao);
 
-            GLuint vp_vbo, vn_vbo, vt_vbo;
-            glGenBuffers(1, &vp_vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-            glBufferData(GL_ARRAY_BUFFER, part->data.mPointCount * sizeof(vec3), &part->data.mVertices[0], GL_STATIC_DRAW);
+			GLuint vp_vbo, vn_vbo, vt_vbo;
+			glGenBuffers(1, &vp_vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
+			glBufferData(GL_ARRAY_BUFFER, part->data.mPointCount * sizeof(vec3), &part->data.mVertices[0], GL_STATIC_DRAW);
 
-            glGenBuffers(1, &vn_vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-            glBufferData(GL_ARRAY_BUFFER, part->data.mPointCount * sizeof(vec3), &part->data.mNormals[0], GL_STATIC_DRAW);
+			glGenBuffers(1, &vn_vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
+			glBufferData(GL_ARRAY_BUFFER, part->data.mPointCount * sizeof(vec3), &part->data.mNormals[0], GL_STATIC_DRAW);
 
-            // Link vertex positions
-            glEnableVertexAttribArray(loc1);
-            glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
-            glVertexAttribPointer(loc1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+			// Link vertex positions
+			glEnableVertexAttribArray(loc1);
+			glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
+			glVertexAttribPointer(loc1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-            // Link vertex normals
-            glEnableVertexAttribArray(loc2);
-            glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
-            glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+			// Link vertex normals
+			glEnableVertexAttribArray(loc2);
+			glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
+			glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-            glBindVertexArray(0); // Unbind VAO when done
-        }
-    }
+			glBindVertexArray(0); // Unbind VAO when done
+		}
+	}
 
-    aiReleaseImport(scene);
-    return fishModel;
+	aiReleaseImport(scene);
+	return fishModel;
 }
 
 
 void render_fish(const FishModel& fishModel) {
-    /*std::cout << "fishModel: " << std::endl;
-    print(fishPosition);
-    std::cout << "body vao: " << std::endl;*/
+	/*std::cout << "fishModel: " << std::endl;
+	print(fishPosition);
+	std::cout << "body vao: " << std::endl;*/
 
-    // Set color uniform
-    glUniform3fv(glGetUniformLocation(shaders["model"], "fishColor"), 1, &fishModel.color.v[0]);
+	// Set color uniform
+	glUniform3fv(glGetUniformLocation(shaders["model"], "fishColor"), 1, &fishModel.color.v[0]);
 
-    // Set up body transformation
-    mat4 bodyModel = identity_mat4();
-    bodyModel = translate(bodyModel, fishModel.position);
-    bodyModel = rotate_y_deg(bodyModel, fishModel.rotationY);
+	// Set up body transformation
+	mat4 bodyModel = identity_mat4();
+	bodyModel = translate(bodyModel, fishModel.position);
+	bodyModel = rotate_y_deg(bodyModel, fishModel.rotationY);
 
-    // Check if model has a color and no texture
-    int color_location = glGetUniformLocation(shaders["model"], "diffuseColor");
-    glUniform1i(glGetUniformLocation(shaders["model"], "useTexture"), 0);
-    //printf("has color : %d \n", model.data.hasColor);
-    //print(model.data.diffuseColor);
+	// Check if model has a color and no texture
+	int color_location = glGetUniformLocation(shaders["model"], "diffuseColor");
+	glUniform1i(glGetUniformLocation(shaders["model"], "useTexture"), 0);
+	//printf("has color : %d \n", model.data.hasColor);
+	//print(model.data.diffuseColor);
 
-    // ¼ì²é color_location ÊÇ·ñÓÐÐ§
-    if (color_location != -1) {
-        //print(fishModel.color);
-        glUniform3fv(color_location, 1, &fishModel.color.v[0]);
-    }
-    else {
-        //std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
-    }
+	// ï¿½ï¿½ï¿½ color_location ï¿½Ç·ï¿½ï¿½ï¿½Ð§
+	if (color_location != -1) {
+		//print(fishModel.color);
+		glUniform3fv(color_location, 1, &fishModel.color.v[0]);
+	}
+	else {
+		//std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+	}
 
-    int model_location = glGetUniformLocation(shaders["model"], "model");
-    glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
+	int model_location = glGetUniformLocation(shaders["model"], "model");
+	glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
 
-    glBindVertexArray(fishModel.body.vao);
-    glDrawArrays(GL_TRIANGLES, 0, fishModel.body.data.mPointCount);
+	glBindVertexArray(fishModel.body.vao);
+	glDrawArrays(GL_TRIANGLES, 0, fishModel.body.data.mPointCount);
 
-    // Set up fin transformation (hierarchical: start with body¡¯s transform)
-    //printf("render_fish fin angle: %f \n", fishModel.finAngle);
+	// Set up fin transformation (hierarchical: start with bodyï¿½ï¿½s transform)
+	//printf("render_fish fin angle: %f \n", fishModel.finAngle);
 
-    mat4 finModel = bodyModel;
-    finModel = rotate_z_deg(finModel, fishModel.finAngle);  // Apply oscillation to fin
-    glUniformMatrix4fv(model_location, 1, GL_FALSE, finModel.m);
+	mat4 finModel = bodyModel;
+	finModel = rotate_z_deg(finModel, fishModel.finAngle);  // Apply oscillation to fin
+	glUniformMatrix4fv(model_location, 1, GL_FALSE, finModel.m);
 
-    glBindVertexArray(fishModel.fin.vao);
+	glBindVertexArray(fishModel.fin.vao);
 
 
 
-    glDrawArrays(GL_TRIANGLES, 0, fishModel.fin.data.mPointCount);
+	glDrawArrays(GL_TRIANGLES, 0, fishModel.fin.data.mPointCount);
 
-    //printf("fish has texture: %d", fishModel.hasTexture);
+	//printf("fish has texture: %d", fishModel.hasTexture);
 
-   /* if (fishModel.hasTexture) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, fishModel.textureID);
-        glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);
-    }*/
+	/* if (fishModel.hasTexture) {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, fishModel.textureID);
+	glUniform1i(glGetUniformLocation(shaderProgramID, "objectTexture"), 0);
+	}*/
 
-    // ÉèÖÃuseTextureµÄuniform±äÁ¿
-    //glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), fishModel.hasTexture);
+	// ï¿½ï¿½ï¿½ï¿½useTextureï¿½ï¿½uniformï¿½ï¿½ï¿½ï¿½
+	//glUniform1i(glGetUniformLocation(shaderProgramID, "useTexture"), fishModel.hasTexture);
 }
 
 #pragma endregion MESH LOADING
 
 #pragma region SHADER_FUNCTIONS
 char* readShaderSource(const char* shaderFile) {
-    FILE* fp;
-    fopen_s(&fp, shaderFile, "rb");
+	FILE* fp;
+	fopen_s(&fp, shaderFile, "rb");
 
-    if (fp == NULL) { return NULL; }
+	if (fp == NULL) { return NULL; }
 
-    fseek(fp, 0L, SEEK_END);
-    long size = ftell(fp);
+	fseek(fp, 0L, SEEK_END);
+	long size = ftell(fp);
 
-    fseek(fp, 0L, SEEK_SET);
-    char* buf = new char[size + 1];
-    fread(buf, 1, size, fp);
-    buf[size] = '\0';
+	fseek(fp, 0L, SEEK_SET);
+	char* buf = new char[size + 1];
+	fread(buf, 1, size, fp);
+	buf[size] = '\0';
 
-    fclose(fp);
+	fclose(fp);
 
-    return buf;
+	return buf;
 }
 
 static void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType) {
-    GLuint ShaderObj = glCreateShader(ShaderType);
+	GLuint ShaderObj = glCreateShader(ShaderType);
 
-    if (ShaderObj == 0) {
-        std::cerr << "Error creating shader..." << std::endl;
-        exit(1);
-    }
-    const char* pShaderSource = readShaderSource(pShaderText);
+	if (ShaderObj == 0) {
+		std::cerr << "Error creating shader..." << std::endl;
+		exit(1);
+	}
+	const char* pShaderSource = readShaderSource(pShaderText);
 
-    glShaderSource(ShaderObj, 1, (const GLchar**)&pShaderSource, NULL);
-    glCompileShader(ShaderObj);
-    GLint success;
-    glGetShaderiv(ShaderObj, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        GLchar InfoLog[1024] = { '\0' };
-        glGetShaderInfoLog(ShaderObj, 1024, NULL, InfoLog);
-        std::cerr << "Error compiling shader: " << InfoLog << std::endl;
-        exit(1);
-    }
-    glAttachShader(ShaderProgram, ShaderObj);
+	glShaderSource(ShaderObj, 1, (const GLchar**)&pShaderSource, NULL);
+	glCompileShader(ShaderObj);
+	GLint success;
+	glGetShaderiv(ShaderObj, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		GLchar InfoLog[1024] = { '\0' };
+		glGetShaderInfoLog(ShaderObj, 1024, NULL, InfoLog);
+		std::cerr << "Error compiling shader: " << InfoLog << std::endl;
+		exit(1);
+	}
+	glAttachShader(ShaderProgram, ShaderObj);
 }
 
 void CompileShaders(string name, string vertex_file, string fragment_file) {
-    GLuint shaderProgramID = glCreateProgram();
-    if (shaderProgramID == 0) {
-        std::cerr << "Error creating shader program..." << std::endl;
-        exit(1);
-    }
+	GLuint shaderProgramID = glCreateProgram();
+	if (shaderProgramID == 0) {
+		std::cerr << "Error creating shader program..." << std::endl;
+		exit(1);
+	}
 
-    AddShader(shaderProgramID, vertex_file.c_str(), GL_VERTEX_SHADER);
-    AddShader(shaderProgramID, fragment_file.c_str(), GL_FRAGMENT_SHADER);
+	AddShader(shaderProgramID, vertex_file.c_str(), GL_VERTEX_SHADER);
+	AddShader(shaderProgramID, fragment_file.c_str(), GL_FRAGMENT_SHADER);
 
-    GLint Success = 0;
-    GLchar ErrorLog[1024] = { '\0' };
-    glLinkProgram(shaderProgramID);
-    glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &Success);
-    if (Success == 0) {
-        glGetProgramInfoLog(shaderProgramID, sizeof(ErrorLog), NULL, ErrorLog);
-        std::cerr << "Error linking shader program: " << ErrorLog << std::endl;
-        exit(1);
-    }
+	GLint Success = 0;
+	GLchar ErrorLog[1024] = { '\0' };
+	glLinkProgram(shaderProgramID);
+	glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &Success);
+	if (Success == 0) {
+		glGetProgramInfoLog(shaderProgramID, sizeof(ErrorLog), NULL, ErrorLog);
+		std::cerr << "Error linking shader program: " << ErrorLog << std::endl;
+		exit(1);
+	}
 
-    glValidateProgram(shaderProgramID);
-    glGetProgramiv(shaderProgramID, GL_VALIDATE_STATUS, &Success);
-    if (!Success) {
-        glGetProgramInfoLog(shaderProgramID, sizeof(ErrorLog), NULL, ErrorLog);
-        std::cerr << "Invalid shader program: " << ErrorLog << std::endl;
-        exit(1);
-    }
-    glUseProgram(shaderProgramID);
+	glValidateProgram(shaderProgramID);
+	glGetProgramiv(shaderProgramID, GL_VALIDATE_STATUS, &Success);
+	if (!Success) {
+		glGetProgramInfoLog(shaderProgramID, sizeof(ErrorLog), NULL, ErrorLog);
+		std::cerr << "Invalid shader program: " << ErrorLog << std::endl;
+		exit(1);
+	}
+	glUseProgram(shaderProgramID);
 
-    shaders[name] = shaderProgramID;
-    return;
+	shaders[name] = shaderProgramID;
+	return;
 }
 #pragma endregion SHADER_FUNCTIONS
 
 
 
 void display() {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    // Set background color to a deep blue
-    glClearColor(0.0f, 0.0f, 0.3f, 1.0f); // Adjust values to get the desired color
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	// Set background color to a deep blue
+	glClearColor(0.0f, 0.0f, 0.3f, 1.0f); // Adjust values to get the desired color
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Enable fog
-    glEnable(GL_FOG);
-    glFogf(GL_FOG_MODE, GL_LINEAR);
-    glFogf(GL_FOG_START, 5.0f);    // Start of fog effect (closer for dense water effect)
-    glFogf(GL_FOG_END, 50.0f);     // End of fog effect
-    float fogColor[4] = { 0.0f, 0.2f, 0.3f, 1.0f }; // Blue-greenish color for fog
-    glFogfv(GL_FOG_COLOR, fogColor);
+	// Enable fog
+	glEnable(GL_FOG);
+	glFogf(GL_FOG_MODE, GL_LINEAR);
+	glFogf(GL_FOG_START, 5.0f);    // Start of fog effect (closer for dense water effect)
+	glFogf(GL_FOG_END, 50.0f);     // End of fog effect
+	float fogColor[4] = { 0.0f, 0.2f, 0.3f, 1.0f }; // Blue-greenish color for fog
+	glFogfv(GL_FOG_COLOR, fogColor);
 
-    glUseProgram(shaders["model"]);
+	glUseProgram(shaders["model"]);
 
-    int view_mat_location = glGetUniformLocation(shaders["model"], "view");
-    int proj_mat_location = glGetUniformLocation(shaders["model"], "proj");
+	int view_mat_location = glGetUniformLocation(shaders["model"], "view");
+	int proj_mat_location = glGetUniformLocation(shaders["model"], "proj");
 
-    mat4 persp_proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
-    glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
+	mat4 persp_proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
+	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 
-    mat4 view = identity_mat4();
-    view = translate(view, vec3(0.0f, 0.0f, -cameraDistance)); // Apply zoom (camera distance)
-    view = translate(view, -cameraPosition);                   // Apply camera position for WASD
-    view = rotate_x_deg(view, cameraRotationX);                // Vertical rotation
-    view = rotate_y_deg(view, cameraRotationY);                // Horizontal rotation
+	mat4 view = identity_mat4();
+	view = translate(view, vec3(0.0f, 0.0f, -cameraDistance)); // Apply zoom (camera distance)
+	view = translate(view, -cameraPosition);                   // Apply camera position for WASD
+	view = rotate_x_deg(view, cameraRotationX);                // Vertical rotation
+	view = rotate_y_deg(view, cameraRotationY);                // Horizontal rotation
 
-    glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
+	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
 
-    // ÔÚäÖÈ¾Ñ­»·ÖÐ
-    glUseProgram(shaders["model"]);
+	// ï¿½ï¿½ï¿½ï¿½È¾Ñ­ï¿½ï¿½ï¿½ï¿½
+	glUseProgram(shaders["model"]);
 
-    // ÉèÖÃ»·¾³¹â
-    // ÉèÖÃ»·¾³¹â
-    glUniform3f(glGetUniformLocation(shaders["model"], "ambientLight"), 0.2f, 0.2f, 0.2f); // Ôö¼Ó»·¾³¹â
-
-
-    // ÉèÖÃÆäËû²ÄÖÊÊôÐÔ
-    glUniform3f(glGetUniformLocation(shaders["model"], "Kd"), 1.0f, 0.5f, 0.31f); // ÎïÌåµÄÂþ·´ÉäÑÕÉ«
-    glUniform3f(glGetUniformLocation(shaders["model"], "Ks"), 1.0f, 1.0f, 1.0f); // ¾µÃæ·´ÉäÑÕÉ«
-    glUniform1f(glGetUniformLocation(shaders["model"], "Shininess"), 32.0f); // ¸ß¹âÇ¿¶È
-
-    // ÉèÖÃ¹âÔ´Î»ÖÃºÍÇ¿¶È
-    glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), 0.0f, 5.0f, 0.0f, 1.0f); // ¹âÔ´ÔÚ¿ÕÖÐ
-    //glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 1.0f, 1.0f, 1.0f); // ¹âÔ´ÑÕÉ«£¨°×É«£©
-    updateLightUniforms();
-    glUniform1i(glGetUniformLocation(shaders["model"], "useOriginShader"), useOriginShader); // ¹âÔ´ÔÚ¿ÕÖÐ
-        
+	// ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
+	glUniform3f(glGetUniformLocation(shaders["model"], "ambientLight"), 0.2f, 0.2f, 0.2f); // ï¿½ï¿½ï¿½Ó»ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	glUniform3f(glGetUniformLocation(shaders["model"], "Kd"), 1.0f, 0.5f, 0.31f); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
+	glUniform3f(glGetUniformLocation(shaders["model"], "Ks"), 1.0f, 1.0f, 1.0f); // ï¿½ï¿½ï¿½æ·´ï¿½ï¿½ï¿½ï¿½É«
+	glUniform1f(glGetUniformLocation(shaders["model"], "Shininess"), 32.0f); // ï¿½ß¹ï¿½Ç¿ï¿½ï¿½
 
-    // »æÖÆ¹âÇò
-    glBindVertexArray(sphereVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices.size() / 3);
-
-
-    for (const auto& model : models) {
-        glBindVertexArray(model.vao);
-
-        if (model.hasTexture) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, model.textureID);
-            glUniform1i(glGetUniformLocation(shaders["model"], "objectTexture"), 0);
-        }
-
-        // ÉèÖÃuseTextureµÄuniform±äÁ¿
-        glUniform1i(glGetUniformLocation(shaders["model"], "useTexture"), model.hasTexture);
-
-        mat4 modelMatrix = identity_mat4();
-        if ("assets/shark3.dae" == model.name) {
-            // ´´½¨öèÓãµÄ±ä»»¾ØÕó
-            modelMatrix = rotate_y_deg(modelMatrix, model.rotationY + sharkRotationY);
-        }
-        else if (model.name == "assets/aincrad.dae") {
-            modelMatrix = rotate_y_deg(modelMatrix, aincradRotationX); // Ó¦ÓÃYÖáÐý×ª
-        } else {
-            modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
-        }
-        
-        modelMatrix = translate(modelMatrix, model.position);
-
-        int matrix_location = glGetUniformLocation(shaders["model"], "model");
-
-  
-
-        glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
-
-
-        // Check if model has a color and no texture
-        int color_location = glGetUniformLocation(shaders["model"], "diffuseColor");
-        //printf("has color : %d \n", model.data.hasColor);
-        //print(model.data.diffuseColor);
-
-        // ¼ì²é color_location ÊÇ·ñÓÐÐ§
-        if (color_location != -1) {
-            // ¸ù¾Ý hasColor µÄÖµÑ¡ÔñÑÕÉ«
-            if (model.data.hasColor) {
-                glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
-            }
-            else {
-                // ´«µÝÒ»¸öÄ¬ÈÏÑÕÉ«£¬ÀýÈç°×É«
-                vec3 defaultColor(1.0f, 1.0f, 1.0f); // °×É«
-                glUniform3fv(color_location, 1, &defaultColor.v[0]);
-            }
-        }
-        else {
-            //std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
-        }
-
-
-        //std::cout << "name: " + model.name << std::endl;
-        if ("terrain1.obj" == model.name || "assets/qst.obj" == model.name) {
-            glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
-        }
-        else {
-            glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
-        }
-    }
-
-    //glDrawArrays(GL_QUADS, 0, terrain.data.mPointCount);
-
-    mat4 bodyModel = identity_mat4();
-    bodyModel = translate(bodyModel, fishModels[0].position);
-    bodyModel = rotate_y_deg(bodyModel, fishModels[0].rotationY);
-
-    int model_location = glGetUniformLocation(shaders["model"], "model");
-    glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
-
-    for (const auto& model : fishModels) {
-        render_fish(model);
-    }
+	// ï¿½ï¿½ï¿½Ã¹ï¿½Ô´Î»ï¿½Ãºï¿½Ç¿ï¿½ï¿½
+	glUniform4f(glGetUniformLocation(shaders["model"], "LightPosition"), 0.0f, 5.0f, 0.0f, 1.0f); // ï¿½ï¿½Ô´ï¿½Ú¿ï¿½ï¿½ï¿½
+	//glUniform3f(glGetUniformLocation(shaders["model"], "Ld"), 1.0f, 1.0f, 1.0f); // ï¿½ï¿½Ô´ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½
+	updateLightUniforms();
+	glUniform1i(glGetUniformLocation(shaders["model"], "useOriginShader"), useOriginShader); // ï¿½ï¿½Ô´ï¿½Ú¿ï¿½ï¿½ï¿½
 
 
 
-    glUseProgram(shaders["simple"]);
 
-    mat4 persp_proj2 = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
-    glUniformMatrix4fv(glGetUniformLocation(shaders["simple"], "proj"), 1, GL_FALSE, persp_proj2.m);
+	// ï¿½ï¿½ï¿½Æ¹ï¿½ï¿½ï¿½
+	glBindVertexArray(sphereVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, vertices.size() / 3);
 
-    mat4 view2 = identity_mat4();
-    view = translate(view, vec3(0.0f, 0.0f, -5.0f)); // ÊÊµ±ÉèÖÃÏà»úÎ»ÖÃ
-    glUniformMatrix4fv(glGetUniformLocation(shaders["simple"], "view"), 1, GL_FALSE, view2.m);
 
-    glutSwapBuffers();
+	for (const auto& model : models) {
+		glBindVertexArray(model.vao);
+
+		if (model.hasTexture) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, model.textureID);
+			glUniform1i(glGetUniformLocation(shaders["model"], "objectTexture"), 0);
+		}
+
+		// ï¿½ï¿½ï¿½ï¿½useTextureï¿½ï¿½uniformï¿½ï¿½ï¿½ï¿½
+		glUniform1i(glGetUniformLocation(shaders["model"], "useTexture"), model.hasTexture);
+
+		mat4 modelMatrix = identity_mat4();
+		if ("assets/shark3.dae" == model.name) {
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ä»»ï¿½ï¿½ï¿½ï¿½
+			modelMatrix = rotate_y_deg(modelMatrix, model.rotationY + sharkRotationY);
+		}
+		else if (model.name == "assets/aincrad.dae") {
+			modelMatrix = rotate_y_deg(modelMatrix, aincradRotationX); // Ó¦ï¿½ï¿½Yï¿½ï¿½ï¿½ï¿½×ª
+		}
+		else {
+			modelMatrix = rotate_y_deg(modelMatrix, model.rotationY);
+		}
+
+		modelMatrix = translate(modelMatrix, model.position);
+
+		int matrix_location = glGetUniformLocation(shaders["model"], "model");
+
+
+
+		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, modelMatrix.m);
+
+
+		// Check if model has a color and no texture
+		int color_location = glGetUniformLocation(shaders["model"], "diffuseColor");
+		//printf("has color : %d \n", model.data.hasColor);
+		//print(model.data.diffuseColor);
+
+		// ï¿½ï¿½ï¿½ color_location ï¿½Ç·ï¿½ï¿½ï¿½Ð§
+		if (color_location != -1) {
+			// ï¿½ï¿½ï¿½ï¿½ hasColor ï¿½ï¿½ÖµÑ¡ï¿½ï¿½ï¿½ï¿½É«
+			if (model.data.hasColor) {
+				glUniform3fv(color_location, 1, &model.data.diffuseColor.v[0]);
+			}
+			else {
+				// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
+				vec3 defaultColor(1.0f, 1.0f, 1.0f); // ï¿½ï¿½É«
+				glUniform3fv(color_location, 1, &defaultColor.v[0]);
+			}
+		}
+		else {
+			//std::cerr << "Warning: diffuseColor uniform not found!" << std::endl;
+		}
+
+
+		//std::cout << "name: " + model.name << std::endl;
+		if ("terrain1.obj" == model.name || "assets/qst.obj" == model.name) {
+			glDrawArrays(GL_QUADS, 0, model.data.mPointCount);
+		}
+		else {
+			glDrawArrays(GL_TRIANGLES, 0, model.data.mPointCount);
+		}
+	}
+
+	//glDrawArrays(GL_QUADS, 0, terrain.data.mPointCount);
+
+	mat4 bodyModel = identity_mat4();
+	bodyModel = translate(bodyModel, fishModels[0].position);
+	bodyModel = rotate_y_deg(bodyModel, fishModels[0].rotationY);
+
+	int model_location = glGetUniformLocation(shaders["model"], "model");
+	glUniformMatrix4fv(model_location, 1, GL_FALSE, bodyModel.m);
+
+	for (const auto& model : fishModels) {
+		render_fish(model);
+	}
+
+
+
+	glUseProgram(shaders["simple"]);
+
+	mat4 persp_proj2 = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
+	glUniformMatrix4fv(glGetUniformLocation(shaders["simple"], "proj"), 1, GL_FALSE, persp_proj2.m);
+
+	mat4 view2 = identity_mat4();
+	view = translate(view, vec3(0.0f, 0.0f, -5.0f)); // ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+	glUniformMatrix4fv(glGetUniformLocation(shaders["simple"], "view"), 1, GL_FALSE, view2.m);
+
+	glutSwapBuffers();
 }
 
 GLfloat rotate_y = 0.0f;
 
 
 void updateScene() {
-    static DWORD last_time = 0;
-    static float maxFinAngle = 1;
-    static float finOscillationSpeed = 0.15f;
-    DWORD curr_time = timeGetTime();
-    if (last_time == 0)
-        last_time = curr_time;
-    float delta = (curr_time - last_time) * 0.001f;
-    last_time = curr_time;
+	static DWORD last_time = 0;
+	static float maxFinAngle = 1;
+	static float finOscillationSpeed = 0.15f;
+	DWORD curr_time = timeGetTime();
+	if (last_time == 0)
+		last_time = curr_time;
+	float delta = (curr_time - last_time) * 0.001f;
+	last_time = curr_time;
 
-    // ¸üÐÂaincradµÄÐý×ª½Ç¶È
-    aincradRotationX += 10.0f * delta; // Ã¿ÃëÐý×ª10¶È£¨¿ÉÒÔ¸ù¾ÝÐèÒªµ÷ÕûËÙ¶È£©
-
-
-    // Update each fish model
-    for (auto& fish : fishModels) {
-        // Update fish position based on its direction (horizontal movement only)
-        fish.position.v[0] += fish.direction.v[0] * traceSpeed * delta; // x
-        fish.position.v[1] = fish.direction.v[1]; // Keep y position constant for horizontal movement
-        fish.position.v[2] += fish.direction.v[2] * traceSpeed * delta; // z
-
-        // Check if the fish has reached a certain distance to reverse direction
-        if (fish.position.v[0] >= traceRadius || fish.position.v[0] <= -traceRadius) {
-            fish.direction.v[0] = -fish.direction.v[0]; // Reverse direction
-        }
-        if (fish.position.v[2] >= traceRadius || fish.position.v[2] <= -traceRadius) {
-            fish.direction.v[2] = -fish.direction.v[2]; // Reverse direction
-        }
-
-        // Update fin angle for animation
-        fish.finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
-    }
-
-    // ¸üÐÂöÏÓãµÄY×ø±ê
-    for (auto& fish : models) {
-        if (fish.name == "assets/seahorse.dae") { // ¼ÙÉèöÏÓãÄ£ÐÍÃû³ÆÎª" squid"
-            //fish.position.v[1] += squidSpeed * seahorseDirection * delta; // ÉÏÏÂÒÆ¶¯
-            if (fish.position.v[1] >= -3.0f || fish.position.v[1] <= 3.0f) { // Éè¶¨ÉÏÏÂ±ß½ç
-                fish.position.v[1] = 1.0f;
-                seahorseDirection *= -1; // ·´×ª·½Ïò
-            }
-            // Ìí¼Ó¶¶¶¯Ð§¹û
-            fish.position.v[1] += (rand() % 10 - 5) * 0.03f * seahorseDirection; // Ð¡·¶Î§¶¶¶¯
-        }
-
-        // ¸üÐÂöèÓãµÄX×ø±ê
-        if (fish.name == "assets/shark3.dae") { // ¼ÙÉèöèÓãÄ£ÐÍÃû³ÆÎª"shark"
-            fish.position.v[0] += sharkSpeed * sharkDirectionX * delta; // Ë®Æ½ÒÆ¶¯
-            if (fish.position.v[0] >= 10.0f || fish.position.v[0] <= -1.0f) { // Éè¶¨Ë®Æ½±ß½ç
-                sharkDirectionX *= -1; // ·´×ª·½Ïò
-                sharkRotationY += 180.0f; // ¸Ä±äÐý×ª½Ç¶È
-                // ¸üÐÂöèÓãµÄÐý×ª
-
-            }
-        }
-        if (fish.name == "assets/squid.dae") { // ¼ÙÉèöèÓãÄ£ÐÍÃû³ÆÎª"shark"
-            fish.position.v[0] += squidSpeed * squidDirectionX * delta; // Ë®Æ½ÒÆ¶¯
-            if (fish.position.v[0] >= 15.0f || fish.position.v[0] <= -25.0f) { // Éè¶¨Ë®Æ½±ß½ç
-                squidDirectionX *= -1; // ·´×ª·½Ïò
-            }
-        }
-    }
+	// ï¿½ï¿½ï¿½ï¿½aincradï¿½ï¿½ï¿½ï¿½×ªï¿½Ç¶ï¿½
+	aincradRotationX += 10.0f * delta; // Ã¿ï¿½ï¿½ï¿½ï¿½×ª10ï¿½È£ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È£ï¿½
 
 
-    glutPostRedisplay(); // Request a redraw to update the display
+	// Update each fish model
+	for (auto& fish : fishModels) {
+		// Update fish position based on its direction (horizontal movement only)
+		fish.position.v[0] += fish.direction.v[0] * traceSpeed * delta; // x
+		fish.position.v[1] = fish.direction.v[1]; // Keep y position constant for horizontal movement
+		fish.position.v[2] += fish.direction.v[2] * traceSpeed * delta; // z
+
+		// Check if the fish has reached a certain distance to reverse direction
+		if (fish.position.v[0] >= traceRadius || fish.position.v[0] <= -traceRadius) {
+			fish.direction.v[0] = -fish.direction.v[0]; // Reverse direction
+		}
+		if (fish.position.v[2] >= traceRadius || fish.position.v[2] <= -traceRadius) {
+			fish.direction.v[2] = -fish.direction.v[2]; // Reverse direction
+		}
+
+		// Update fin angle for animation
+		fish.finAngle = maxFinAngle * sinf(curr_time * finOscillationSpeed);
+	}
+
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Yï¿½ï¿½ï¿½ï¿½
+	for (auto& fish : models) {
+		if (fish.name == "assets/seahorse.dae") { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª" squid"
+			//fish.position.v[1] += squidSpeed * seahorseDirection * delta; // ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½
+			if (fish.position.v[1] >= -3.0f || fish.position.v[1] <= 3.0f) { // ï¿½è¶¨ï¿½ï¿½ï¿½Â±ß½ï¿½
+				fish.position.v[1] = 1.0f;
+				seahorseDirection *= -1; // ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½
+			}
+			// ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
+			fish.position.v[1] += (rand() % 10 - 5) * 0.03f * seahorseDirection; // Ð¡ï¿½ï¿½Î§ï¿½ï¿½ï¿½ï¿½
+		}
+
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½
+		if (fish.name == "assets/shark3.dae") { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª"shark"
+			fish.position.v[0] += sharkSpeed * sharkDirectionX * delta; // Ë®Æ½ï¿½Æ¶ï¿½
+			if (fish.position.v[0] >= 10.0f || fish.position.v[0] <= -1.0f) { // ï¿½è¶¨Ë®Æ½ï¿½ß½ï¿½
+				sharkDirectionX *= -1; // ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½
+				sharkRotationY += 180.0f; // ï¿½Ä±ï¿½ï¿½ï¿½×ªï¿½Ç¶ï¿½
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ª
+
+			}
+		}
+		if (fish.name == "assets/squid.dae") { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª"shark"
+			fish.position.v[0] += squidSpeed * squidDirectionX * delta; // Ë®Æ½ï¿½Æ¶ï¿½
+			if (fish.position.v[0] >= 15.0f || fish.position.v[0] <= -25.0f) { // ï¿½è¶¨Ë®Æ½ï¿½ß½ï¿½
+				squidDirectionX *= -1; // ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½
+			}
+		}
+	}
+
+
+	glutPostRedisplay(); // Request a redraw to update the display
 }
 
 void init() {
-    CompileShaders("model", "simpleVertexShader.txt", "simpleFragmentShader.txt");
-    CompileShaders("simple", "1.glsl", "2.glsl");
+	CompileShaders("model", "simpleVertexShader.txt", "simpleFragmentShader.txt");
+	CompileShaders("simple", "1.glsl", "2.glsl");
 
-    loc1 = glGetAttribLocation(shaders["model"], "vertex_position");
-    loc2 = glGetAttribLocation(shaders["model"], "vertex_normal");
-
-
-    initSphere();   
-
-    models.push_back(
-        load_model(
-        "terrain1.obj",
-        vec3(0.0f, -12.0f, -10.0f),
-        30.0f,
-        "assets/stone2.jpg", 8)
-    );
-    models.push_back(
-        load_model(
-            "assets/aincrad.dae",
-            vec3(10.0f, 30.0f, -70.0f),
-            0.0f,
-            nullptr, 1)
-    );
-
-    models.push_back(
-        load_model(
-            "assets/tkr.dae",
-            vec3(-8.0f, -10, -9.0f),
-            275.0f,
-            "assets/metal1.jpg", 1)
-    );
-
-    for (int i = 0;i < 5;i++) {
-        models.push_back(
-            load_model(
-                "assets/white_coral.dae",
-                vec3(i+10, -10.0f, -(10+i)),
-                30+i,
-                nullptr, 1)
-        );
-    }
-   
-    for (int i = 0;i < 3;i++) {
-        models.push_back(
-            load_model(
-                "assets/red_coral.dae",
-                vec3(i + 8, -10.0f, -(10 + i + 5)),
-                30 + i,
-                nullptr, 1)
-        );
-    }
-    models.push_back(
-        load_model(
-            "assets/qst.obj",
-            vec3(10.0f, -24.0f, 18.0f),
-            45.0f,
-            "assets/qst.png", 1)
-    );
-
-      models.push_back(
-            load_model(
-                "assets/weed.dae",
-                vec3(-10.0f, -12.0f, -30.0f),
-                45.0f,
-                nullptr, 1)
-        );
-      models.push_back(
-          load_model(
-              "assets/weed.dae",
-              vec3(5.0f, -12.0f, -30.0f),
-              15.0f,
-              nullptr, 1)
-      );
-   
-
-    models.push_back(
-        load_model(
-            "assets/shark3.dae",
-            vec3(0.0f, 0.0f, -3.0f),
-            45.0f,
-            nullptr, 1)
-    );
+	loc1 = glGetAttribLocation(shaders["model"], "vertex_position");
+	loc2 = glGetAttribLocation(shaders["model"], "vertex_normal");
 
 
-    models.push_back(
-        load_model(
-            "assets/seahorse.dae",
-            vec3(30.0f, 20.0f, -40.0f),
-            15.0f,
-            nullptr, 1)
-    );
+	initSphere();
 
-    models.push_back(
-        load_model(
-            "assets/squid.dae",
-            vec3(0.0f, 10.0f, -10.0f),
-            45.0f,
-            nullptr, 1)
-    );
+	models.push_back(
+		load_model(
+			"terrain1.obj",
+			vec3(0.0f, -12.0f, -10.0f),
+			30.0f,
+			"assets/stone2.jpg", 8)
+	);
+	models.push_back(
+		load_model(
+			"assets/aincrad.dae",
+			vec3(10.0f, 30.0f, -70.0f),
+			0.0f,
+			nullptr, 1)
+	);
 
-    models.push_back(
-        load_model(
-            "assets/squid.dae",
-            vec3(-3.0f, 14.0f, -12.0f),
-            45.0f,
-            nullptr, 1)
-    );
-    models.push_back(
-        load_model(
-            "assets/jiangyou.dae",
-            vec3(12.0f, -12.0f, 3.0f),
-            45.0f,
-            nullptr, 1)
-    );
+	models.push_back(
+		load_model(
+			"assets/tkr.dae",
+			vec3(-8.0f, -10, -9.0f),
+			275.0f,
+			"assets/metal1.jpg", 1)
+	);
+
+	for (int i = 0;i < 5;i++) {
+		models.push_back(
+			load_model(
+				"assets/white_coral.dae",
+				vec3(i + 10, -10.0f, -(10 + i)),
+				30 + i,
+				nullptr, 1)
+		);
+	}
+
+	for (int i = 0;i < 3;i++) {
+		models.push_back(
+			load_model(
+				"assets/red_coral.dae",
+				vec3(i + 8, -10.0f, -(10 + i + 5)),
+				30 + i,
+				nullptr, 1)
+		);
+	}
+	models.push_back(
+		load_model(
+			"assets/qst.obj",
+			vec3(10.0f, -24.0f, 18.0f),
+			45.0f,
+			"assets/qst.png", 1)
+	);
+
+	models.push_back(
+		load_model(
+			"assets/weed.dae",
+			vec3(-10.0f, -12.0f, -30.0f),
+			45.0f,
+			nullptr, 1)
+	);
+	models.push_back(
+		load_model(
+			"assets/weed.dae",
+			vec3(5.0f, -12.0f, -30.0f),
+			15.0f,
+			nullptr, 1)
+	);
 
 
+	models.push_back(
+		load_model(
+			"assets/shark3.dae",
+			vec3(0.0f, 0.0f, -3.0f),
+			45.0f,
+			nullptr, 1)
+	);
+
+
+	models.push_back(
+		load_model(
+			"assets/seahorse.dae",
+			vec3(30.0f, 20.0f, -40.0f),
+			15.0f,
+			nullptr, 1)
+	);
+
+	models.push_back(
+		load_model(
+			"assets/squid.dae",
+			vec3(0.0f, 10.0f, -10.0f),
+			45.0f,
+			nullptr, 1)
+	);
+
+	models.push_back(
+		load_model(
+			"assets/squid.dae",
+			vec3(-3.0f, 14.0f, -12.0f),
+			45.0f,
+			nullptr, 1)
+	);
+	models.push_back(
+		load_model(
+			"assets/jiangyou.dae",
+			vec3(12.0f, -12.0f, 3.0f),
+			45.0f,
+			nullptr, 1)
+	);
 
 
 
-    /*models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
-    models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));*/
-    //models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
-    // Initialize multiple fish models
-    for (int i = 0; i < 50; ++i) {
-        FishModel fish;
-        fish = load_fish_model("assets/xxx.dae", vec3(randomFloat(-30, 15), randomFloat(-10,5), randomFloat(-10, -3)), rand() * 10 % 45, "assets/fish.png");
-        fish.direction = vec3(randomFloat(1, 10), randomFloat(-4, 4), 0.0f); // Set initial swimming direction
-        fishModels.push_back(fish);
-    }
+
+	/*models.push_back(load_model("green_cube.dae", vec3(0.0f, 5.0f, -10.0f), -45.0f, nullptr));
+	models.push_back(load_model("pic_cube.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "diffuse.jpg"));*/
+	//models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
+
+	// Initialize multiple fish models
+	for (int i = 0; i < 50; ++i) {
+		FishModel fish;
+		fish = load_fish_model("assets/xxx.dae", vec3(randomFloat(-30, 15), randomFloat(-10, 5), randomFloat(-10, -3)), rand() * 10 % 45, "assets/fish.png");
+		fish.direction = vec3(randomFloat(1, 10), randomFloat(-4, 4), 0.0f); // Set initial swimming direction
+		fishModels.push_back(fish);
+	}
 
 }
 
 
 void keypress(unsigned char key, int x, int y) {
-    float movementSpeed = 0.5f; // Speed of camera movement
-    float rotationSpeed = 5.0f;  // Speed of camera rotation
+	float movementSpeed = 0.5f; // Speed of camera movement
+	float rotationSpeed = 5.0f;  // Speed of camera rotation
 
-    std::cout << "Key pressed: " << key << std::endl; // Debug output
+	std::cout << "Key pressed: " << key << std::endl; // Debug output
 
-    switch (key) {
-    case 'w': // Move forward
-        cameraPosition.v[2] -= movementSpeed;
-        std::cout << "Moving Forward: " << cameraPosition.v[2] << std::endl;
-        break;
-    case 's': // Move backward
-        cameraPosition.v[2] += movementSpeed;
-        std::cout << "Moving Backward: " << cameraPosition.v[2] << std::endl;
-        break;
-    case 'a': // Move left
-        cameraPosition.v[0] -= movementSpeed;
-        std::cout << "Moving Left: " << cameraPosition.v[0] << std::endl;
-        break;
-    case 'd': // Move right
-        cameraPosition.v[0] += movementSpeed;
-        std::cout << "Moving Right: " << cameraPosition.v[0] << std::endl;
-        break;
-    case 'q': // Rotate left (yaw)
-        cameraRotationY -= rotationSpeed;
-        std::cout << "Rotating Left: " << cameraRotationY << std::endl;
-        break;
-    case 'e': // Rotate right (yaw)
-        cameraRotationY += rotationSpeed;
-        std::cout << "Rotating Right: " << cameraRotationY << std::endl;
-        break;
-    case 'r': // Move up
-        cameraPosition.v[1] += movementSpeed;
-        std::cout << "Moving Up: " << cameraPosition.v[1] << std::endl;
-        break;
-    case 'f': // Move down
-        cameraPosition.v[1] -= movementSpeed;
-        std::cout << "Moving Down: " << cameraPosition.v[1] << std::endl;
-        break;
-    case 'm':
-        // ÇÐ»»¹âÔ´
-        lightEnabled = !lightEnabled; // ÇÐ»»¹âÔ´¿ª¹Ø×´Ì¬
-        if (lightEnabled) {
-            // Èç¹û¹âÔ´¿ªÆô£¬ÇÐ»»µ½ÏÂÒ»¸ö¹âÔ´ÀàÐÍ
-            currentLightType = (currentLightType == LIGHT_TYPE_1) ? LIGHT_TYPE_2 : LIGHT_TYPE_1;
-            currentColorIndex = (currentColorIndex + 1) % 6; // ÇÐ»»µ½ÏÂÒ»¸öÑÕÉ«
-        }
-        updateLightUniforms(); // ¸üÐÂ¹âÔ´µÄ uniform ±äÁ¿
-    case 'n':
-        useOriginShader = !useOriginShader;
-    }
-    glutPostRedisplay(); // Request a redraw to update the display with changes
+	switch (key) {
+	case 'w': // Move forward
+		cameraPosition.v[2] -= movementSpeed;
+		std::cout << "Moving Forward: " << cameraPosition.v[2] << std::endl;
+		break;
+	case 's': // Move backward
+		cameraPosition.v[2] += movementSpeed;
+		std::cout << "Moving Backward: " << cameraPosition.v[2] << std::endl;
+		break;
+	case 'a': // Move left
+		cameraPosition.v[0] -= movementSpeed;
+		std::cout << "Moving Left: " << cameraPosition.v[0] << std::endl;
+		break;
+	case 'd': // Move right
+		cameraPosition.v[0] += movementSpeed;
+		std::cout << "Moving Right: " << cameraPosition.v[0] << std::endl;
+		break;
+	case 'q': // Rotate left (yaw)
+		cameraRotationY -= rotationSpeed;
+		std::cout << "Rotating Left: " << cameraRotationY << std::endl;
+		break;
+	case 'e': // Rotate right (yaw)
+		cameraRotationY += rotationSpeed;
+		std::cout << "Rotating Right: " << cameraRotationY << std::endl;
+		break;
+	case 'r': // Move up
+		cameraPosition.v[1] += movementSpeed;
+		std::cout << "Moving Up: " << cameraPosition.v[1] << std::endl;
+		break;
+	case 'f': // Move down
+		cameraPosition.v[1] -= movementSpeed;
+		std::cout << "Moving Down: " << cameraPosition.v[1] << std::endl;
+		break;
+	case 'm':
+		// ï¿½Ð»ï¿½ï¿½ï¿½Ô´
+		lightEnabled = !lightEnabled; // ï¿½Ð»ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½×´Ì¬
+		if (lightEnabled) {
+			// ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
+			currentLightType = (currentLightType == LIGHT_TYPE_1) ? LIGHT_TYPE_2 : LIGHT_TYPE_1;
+			currentColorIndex = (currentColorIndex + 1) % 6; // ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½É«
+		}
+		updateLightUniforms(); // ï¿½ï¿½ï¿½Â¹ï¿½Ô´ï¿½ï¿½ uniform ï¿½ï¿½ï¿½ï¿½
+	case 'n':
+		useOriginShader = !useOriginShader;
+	}
+	glutPostRedisplay(); // Request a redraw to update the display with changes
 }
 
 
 void mouseButton(int button, int state, int x, int y) {
-    std::cout << button << std::endl;
+	std::cout << button << std::endl;
 
-    if (button == GLUT_LEFT_BUTTON) {
-        leftMousePressed = (state == GLUT_DOWN);
-        lastMouseX = x;
-        lastMouseY = y;
-    }
-    else if (button == 3) { // Scroll up
-        cameraDistance -= 1.0f;
-        if (cameraDistance < 2.0f) cameraDistance = 2.0f; // Prevent too close zoom
-    }
-    else if (button == 4) { // Scroll down
-        cameraDistance += 1.0f;
-        if (cameraDistance > 50.0f) cameraDistance = 50.0f; // Limit zoom-out distance
-    }
+	if (button == GLUT_LEFT_BUTTON) {
+		leftMousePressed = (state == GLUT_DOWN);
+		lastMouseX = x;
+		lastMouseY = y;
+	}
+	else if (button == 3) { // Scroll up
+		cameraDistance -= 1.0f;
+		if (cameraDistance < 2.0f) cameraDistance = 2.0f; // Prevent too close zoom
+	}
+	else if (button == 4) { // Scroll down
+		cameraDistance += 1.0f;
+		if (cameraDistance > 50.0f) cameraDistance = 50.0f; // Limit zoom-out distance
+	}
 }
 
 
 void mouseMotion(int x, int y) {
-    if (leftMousePressed) {
-        float dx = x - lastMouseX;
-        float dy = y - lastMouseY;
-        cameraRotationY += dx * 0.2f;
-        cameraRotationX += dy * 0.2f;
-        if (cameraRotationX > 89.0f) cameraRotationX = 89.0f; // Prevent flipping over top
-        if (cameraRotationX < -89.0f) cameraRotationX = -89.0f; // Prevent flipping over bottom
-        lastMouseX = x;
-        lastMouseY = y;
-        glutPostRedisplay();
-    }
+	if (leftMousePressed) {
+		float dx = x - lastMouseX;
+		float dy = y - lastMouseY;
+		cameraRotationY += dx * 0.2f;
+		cameraRotationX += dy * 0.2f;
+		if (cameraRotationX > 89.0f) cameraRotationX = 89.0f; // Prevent flipping over top
+		if (cameraRotationX < -89.0f) cameraRotationX = -89.0f; // Prevent flipping over bottom
+		lastMouseX = x;
+		lastMouseY = y;
+		glutPostRedisplay();
+	}
 }
 
 
 int main(int argc, char** argv) {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(width, height);
-    glutCreateWindow("Hello Triangle");
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(width, height);
+	glutCreateWindow("Hello Triangle");
 
-    // ÉèÖÃÈ«ÆÁ
-    //glutFullScreen();
+	// ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½
+	//glutFullScreen();
 
-    glutDisplayFunc(display);
-    glutIdleFunc(updateScene);
-    glutKeyboardFunc(keypress);
-    glutMouseFunc(mouseButton);
-    glutMotionFunc(mouseMotion);
+	glutDisplayFunc(display);
+	glutIdleFunc(updateScene);
+	glutKeyboardFunc(keypress);
+	glutMouseFunc(mouseButton);
+	glutMotionFunc(mouseMotion);
 
-    GLenum res = glewInit();
-    if (res != GLEW_OK) {
-        fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
-        return 1;
-    }
-    init();
+	GLenum res = glewInit();
+	if (res != GLEW_OK) {
+		fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
+		return 1;
+	}
+	init();
 
-    // ×¢²áÏÔÊ¾ºÍ¶¨Ê±Æ÷º¯Êý
-    glutDisplayFunc(display);
+	// ×¢ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½Í¶ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	glutDisplayFunc(display);
 
-    glutMainLoop();
-    return 0;
+	glutMainLoop();
+	return 0;
 }
