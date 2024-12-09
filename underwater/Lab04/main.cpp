@@ -818,7 +818,7 @@ GLfloat rotate_y = 0.0f;
 
 void updateScene() {
 	static DWORD last_time = 0;
-	static float maxFinAngle = 1;
+	static float maxFinAngle = 0.4f;
 	static float finOscillationSpeed = 0.15f;
 	DWORD curr_time = timeGetTime();
 	if (last_time == 0)
@@ -1008,10 +1008,10 @@ void init() {
 	//models.push_back(load_model("assets/fish2.dae", vec3(0.0f, -4.0f, -10.0f), 30.0f, "assets/fish.png"));
 
 	// Initialize multiple fish models
-	for (int i = 0; i < 50; ++i) {
+	for (int i = 0; i < 500; ++i) {
 		FishModel fish;
-		fish = load_fish_model("assets/xxx.dae", vec3(randomFloat(-30, 15), randomFloat(-10, 5), randomFloat(-10, -3)), rand() * 10 % 45, "assets/fish.png");
-		fish.direction = vec3(randomFloat(1, 10), randomFloat(-4, 4), 0.0f); // Set initial swimming direction
+		fish = load_fish_model("assets/xxx.dae", vec3(randomFloat(-30, 55), randomFloat(-5, 85), randomFloat(-10, -3)), rand() * 10 % 45, "assets/fish.png");
+		fish.direction = vec3(randomFloat(1, 10), randomFloat(-4, 4), randomFloat(-5, 5)); // Set initial swimming direction
 		fishModels.push_back(fish);
 	}
 
@@ -1114,7 +1114,7 @@ int main(int argc, char** argv) {
 	glutCreateWindow("Hello Triangle");
 
 	// ����ȫ��
-	//glutFullScreen();
+	glutFullScreen();
 
 	glutDisplayFunc(display);
 	glutIdleFunc(updateScene);
